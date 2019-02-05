@@ -93,10 +93,10 @@
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 25000);
 				canvas.flush();
 
-				canvas.renderGridX(Math.floor((-centerX -Math.sign(centerX))), -centerY - oneScaledY, -centerY + oneScaledY, 1, oneScaledX);
+				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, 1, oneScaledX);
 				canvas.flush(true);
 
-				canvas.renderGridY(Math.floor((-centerY -Math.sign(centerY))), -centerX - oneScaledX, -centerX + oneScaledX, 1, oneScaledY);
+				canvas.renderGridY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, 1, oneScaledY);
 				canvas.flush(true);
 			}
 
