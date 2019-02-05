@@ -1,0 +1,75 @@
+<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+    crossorigin="anonymous"></script>
+<script src="canvas.js"></script>
+<script src="graph.js"></script>
+<link rel="stylesheet" href="style.css">
+
+<textarea id="script">
+// main is called once before all lines are rendered, everything outside main will be called once before each line
+function main() {
+
+}
+</textarea>
+<textarea id="functions">
+y = 0
+x = 0
+</textarea>
+
+<title>Graph it!</title>
+
+<script>
+    var width = 1140;
+    var height = 700;
+
+    var viewWidth = width;
+    var viewHeight = height;
+
+    var posX = 0;
+    var posY = 0;
+    var points = 25;
+
+    let graphCanvas = new Canvas('graph', new Vector2(width, height));
+    let graph = new Graph(new Vector2(posX, posY), new Vector2(viewWidth, viewHeight), points);
+
+    $('#functions, #script').on('blur', function (e) {
+        calc();
+    });
+
+    function calc() {
+        let script = $('#script').val();
+        eval(script);
+        if (main)
+            main();
+
+        let functions = $('#functions').val().split('\n');
+        let tmp = new Array();
+        for (let i = 0; i < functions.length; i++) {
+            if (functions[i].length > 0)
+                tmp.push(functions[i]);
+        }
+
+        functions = tmp;
+
+        let lines = graph.getLines(functions, script, new Vector2(viewWidth, viewHeight));
+
+        graphCanvas.renderLines(lines, functions);
+    }
+
+    calc();
+    graph.setOnMove(calc);
+
+    function pos() {
+        if (graphCanvas.mouseDown == true) {
+            let delta = graphCanvas.getDeltaPos();
+            if (Math.abs(delta.x) + Math.abs(delta.y) > 0) {
+                graph.move(Vector2.multiply(delta, new Vector2(-1, 1)));
+            }
+        }
+
+        setTimeout(pos, 10);
+    }
+
+    pos();
+</script>
+
+<div>One "line" per line, set (x, y), can use (X, Y, js functions, functions defined in textarea above)</div>
