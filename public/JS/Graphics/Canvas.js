@@ -137,7 +137,7 @@ class Canvas {
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
-			this.vertices.push(0);
+			this.vertices.push(x * x);
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
@@ -178,9 +178,9 @@ class Canvas {
 		}
 	}
 
-	renderGridX(minX, maxX, minY, maxY, resX) {
+	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
-		for (let x = minX + resX; x < maxX; x += resX) {
+		for (let x = centerX; x < centerX + offsetX && x > centerX - offsetX; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
 			this.vertices.push(x);
 			this.vertices.push((i % 2 == 0) ? minY - 1 : maxY + 1);
 			this.vertices.push(0.35);
@@ -202,8 +202,28 @@ class Canvas {
 		}
 	}
 
-	renderGridY(center, length) {
-		let resY = Math.abs(maxY - minY) / length;
+	renderGridY(centerY, minX, maxX, resY, offsetY) {
+		let i = 0;
+		for (let y = centerY; y < centerY + offsetY && y > centerY - offsetY; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
+			this.vertices.push((i % 2 == 0) ? minX - 1 : maxX + 1);
+			this.vertices.push(y);
+			this.vertices.push(0.35);
+			this.vertices.push(0.35);
+			this.vertices.push(0.35);
+			this.vertices.push(0.5);
+
+			this.indices.push(this.indices.length);
+
+			this.vertices.push((i % 2 == 0) ? maxX + 1 : minX - 1);
+			this.vertices.push(y);
+			this.vertices.push(0.35);
+			this.vertices.push(0.35);
+			this.vertices.push(0.35);
+			this.vertices.push(0.5);
+
+			this.indices.push(this.indices.length);
+			i++;
+		}
 	}
 
 	/**
