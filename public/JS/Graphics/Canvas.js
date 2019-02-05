@@ -133,29 +133,35 @@ class Canvas {
 		}
 	}
 
-	renderLineX(minX, maxX, length, func) {
+	renderLineX(minX, maxX, length, func, color) {
+		if (!color)
+			color = new Color(1, 0, 1, 1);
+
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
 			this.vertices.push(func(x));
-			this.vertices.push(0.15);
-			this.vertices.push(0.15);
-			this.vertices.push(0.15);
-			this.vertices.push(1);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
 		}
 	}
 
-	renderLineY(minY, maxY, length, func) {
+	renderLineY(minY, maxY, length, func, color) {
+		if (!color)
+			color = new Color(1, 0, 1, 1);
+
 		let resY = Math.abs(maxY - minY) / length;
 		for (let y = minY; y <= maxY; y += resY) {
 			this.vertices.push(func(y));
 			this.vertices.push(y);
-			this.vertices.push(0.15);
-			this.vertices.push(0.15);
-			this.vertices.push(0.15);
-			this.vertices.push(1);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
 		}
@@ -393,7 +399,7 @@ class Canvas {
 		this.keys = {};
 
 		let self = this;
-		$(window).on('keydown', function (event) {			
+		$(window).on('keydown', function (event) {
 			let key = self.keys[event.which];
 			if (key) {
 				key.down = true;

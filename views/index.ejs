@@ -7,9 +7,7 @@
 </head>
 
 <body>
-	<div id="functions">
-		<div id="newFunction">+</div>
-	</div>
+	<textarea id="functions"></textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 	 crossorigin="anonymous"></script>
@@ -44,16 +42,9 @@
 
 	<script>
 		$(document).ready(function () {
-			$('.removeFunction').on('click', function () {
-
-			});
-
-			$('#newFunction').on('click', function () {
-				$('#functions').append($('<div class="function"><textarea class="xFunction">x =</textarea><textarea class="yFunction">y =</textarea><div class="removeFunction">-</div></div>)'));
-			});
-
 			let app = new Application(60, 60);
 			let canvas = new Canvas('test_canvas', new Vector2(500, 500));
+			let functions = [];
 
 			app.onStart = function () {
 				canvas.setupShaders(document.getElementById("VERT_SHADER").textContent, document.getElementById("FRAG_SHADER").textContent);
@@ -68,6 +59,15 @@
 				canvas.scale = new Vector2(xScale, yScale);
 
 				canvas.registerKey(16, null, null);
+
+				$('#functions').on('input', function () {
+					functions = [];
+					let functionStrings = $('#functions').val().split('\n');
+					for (let i = 0; i < functionStrings.length; i++) {
+						if (functionStrings[i].length > 0)
+							functions.push(functionStrings[i]);
+					}
+				});
 			};
 
 			app.onUpdate = function () {
@@ -109,15 +109,34 @@
 				let oneScaledX = 1 / matrix[0];
 				let oneScaledY = 1 / matrix[4];
 
-				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 10000, function (x) {
+				if (functions.length > 0) {
+					for (let i = 0; i < functions.length; i++) {
+						if (functions[i][0] == 'x') {
+
+						}
+						// else if
+					}
+				}
+
+				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, function (x) {
 					return Math.sin(x);
-				});
+				}, new Color(1, 0, 0, 1));
 				canvas.flush();
 
 				//canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, function(y) {
 				//	return 0;
 				//});
 				//canvas.flush(true);
+
+				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
+					return 0;
+				}, new Color(0, 0, 0, 0.5));
+				canvas.flush(true);
+
+				canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, function (y) {
+					return 0;
+				}, new Color(0, 0, 0, 0.5));
+				canvas.flush(true);
 
 				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, 1, oneScaledX);
 				canvas.flush(true);

@@ -24,45 +24,13 @@ canvas {
 
 #functions {
 	left: 0;
-	position: absolute;
-	width: 199px;
-	height: 100%;
-	border-right: 1px solid #d6d6d6;
-	background-color: #fbfbfb;
-}
-
-.function {
-	padding-top: 1rem;
-	border-bottom: 1px solid #e8e8e8;
-}
-
-.xFunction, .yFunction {
-	width: 199px;
-	padding: 0;
-	margin: 0;
-	resize: none;
-	border: none;
-	background-color: #fbfbfb;
-}
-
-#newFunction {
-	padding: 1rem;
-}
-
-.removeFunction, #newFunction {
-	position: sticky;
-	left: 0;
-	transform: translateX(50%);
-	margin: 0;
-	padding: 0;
-}
-
-.removeFunction {
-	bottom: 0;
-	margin-bottom: 1rem;
-}
-
-#newFunction {
-	margin-top: 1rem;
 	top: 0;
+	position: absolute;
+	width: 196px;
+	height: 100%;
+	border: none;
+	margin: none;
+	padding: none;
+	background-color: #fbfbfb;
+	resize: none;
 }
