@@ -56,10 +56,18 @@
 			let canvas = new Canvas('test_canvas', new Vector2(500, 500));
 
 			app.onStart = function () {
-				canvas.fullscreen(true);
 				canvas.setupShaders(document.getElementById("VERT_SHADER").textContent, document.getElementById("FRAG_SHADER").textContent);
 				canvas.setBackground(new Color(0.952, 0.952, 0.952, 1));
 				canvas.setMargin(new Vector2(200, 0));
+				canvas.fullscreen(true);
+
+				let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
+				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 10);
+				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 10);
+
+				canvas.scale = new Vector2(xScale, yScale);
+
+				canvas.registerKey(16, null, null);
 			};
 
 			app.onUpdate = function () {
@@ -67,17 +75,28 @@
 				let scrollDelta = canvas.scrollDelta();
 
 				if (canvas.mouseDown) {
-					canvas.position.x += (mouseDelta.x / canvas.dimensions.x) * 2;
-					canvas.position.y -= (mouseDelta.y / canvas.dimensions.y) * 2;
+					canvas.position.x += (mouseDelta.x / (canvas.dimensions.x - canvas.margin.x));
+					canvas.position.y -= (mouseDelta.y / (canvas.dimensions.y - canvas.margin.y));
 				}
 
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
+					let deltaX, deltaY;
+					if (canvas.getKeyDown(16) == true) {
+						deltaX = scrollDelta.x * canvas.scale.x * canvas.scale.x * 10;
+						deltaY = scrollDelta.y * canvas.scale.y * canvas.scale.y * 10;
+					} else {
+						deltaX = (scrollDelta.x + scrollDelta.y) * Math.min(canvas.scale.x * canvas.scale.x, canvas.scale.y * canvas.scale.y) * 10;
+						deltaY = deltaX;
+					}
 
-					canvas.scale.x += (scrollDelta.x / 2000) / ((canvas.dimensions.x - canvas.margin.x) / (canvas.dimensions.y - canvas.margin.y)) / Math.max(Math.min((1 / canvas.scale.x) * (1 / canvas.scale.x) * 0.5, 100), 1);
-					canvas.scale.y += (scrollDelta.y / 2000) / ((canvas.dimensions.y - canvas.margin.y) / (canvas.dimensions.x - canvas.margin.x)) / Math.max(Math.min((1 / canvas.scale.y) * (1 / canvas.scale.y) * 0.5, 100), 1);
+					deltaX = Math.min(Math.max(0.01, Math.abs(deltaX)), 50) * Math.sign(deltaX);
+					deltaY = Math.min(Math.max(0.01, Math.abs(deltaY)), 50) * Math.sign(deltaY);
 
-					canvas.scale.x = Math.min(Math.max(0.01, canvas.scale.x), 10000);
-					canvas.scale.y = Math.min(Math.max(0.01, canvas.scale.y), 10000);
+					canvas.scale.x += (deltaX / ((canvas.dimensions.x - canvas.margin.x)));
+					canvas.scale.y += (deltaY / ((canvas.dimensions.y - canvas.margin.y)));
+
+					canvas.scale.x = Math.min(Math.max(0.0001, canvas.scale.x), 100);
+					canvas.scale.y = Math.min(Math.max(0.0001, canvas.scale.y), 100);
 				}
 
 				let scale = Matrix3.scaling(canvas.scale.x, canvas.scale.y);
@@ -90,8 +109,15 @@
 				let oneScaledX = 1 / matrix[0];
 				let oneScaledY = 1 / matrix[4];
 
-				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 25000);
+				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 10000, function (x) {
+					return Math.sin(x);
+				});
 				canvas.flush();
+
+				//canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, function(y) {
+				//	return 0;
+				//});
+				//canvas.flush(true);
 
 				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, 1, oneScaledX);
 				canvas.flush(true);

@@ -133,11 +133,11 @@ class Canvas {
 		}
 	}
 
-	renderLineX(minX, maxX, length) {
+	renderLineX(minX, maxX, length, func) {
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
-			this.vertices.push(Math.sin(x));
+			this.vertices.push(func(x));
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
@@ -147,10 +147,10 @@ class Canvas {
 		}
 	}
 
-	renderLineY(minY, maxY, length) {
+	renderLineY(minY, maxY, length, func) {
 		let resY = Math.abs(maxY - minY) / length;
 		for (let y = minY; y <= maxY; y += resY) {
-			this.vertices.push(0);
+			this.vertices.push(func(y));
 			this.vertices.push(y);
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
@@ -161,27 +161,8 @@ class Canvas {
 		}
 	}
 
-	renderLineDouble(minX, maxX, minY, maxY, length) {
-		let resX = Math.abs(maxX - minX) / length;
-		let resY = Math.abs(maxY - minY) / length;
-		for (let x = minX; x <= maxX; x += resX) {
-			for (let y = minY; y <= maxY; y += resY) {
-				this.vertices.push(x);
-				this.vertices.push(y);
-				this.vertices.push(0.15);
-				this.vertices.push(0.15);
-				this.vertices.push(0.15);
-				this.vertices.push(1);
-
-				this.indices.push(this.indices.length);
-			}
-		}
-	}
-
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
-		console.log(centerX);
-		
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
 			this.vertices.push(x);
 			this.vertices.push((i % 2 == 0) ? minY - offsetX : maxY + offsetX);
@@ -412,7 +393,7 @@ class Canvas {
 		this.keys = {};
 
 		let self = this;
-		$(window).on('keydown', function (event) {
+		$(window).on('keydown', function (event) {			
 			let key = self.keys[event.which];
 			if (key) {
 				key.down = true;
