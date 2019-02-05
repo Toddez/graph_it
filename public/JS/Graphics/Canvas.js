@@ -180,9 +180,11 @@ class Canvas {
 
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
-		for (let x = centerX; x < centerX + offsetX && x > centerX - offsetX; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
+		console.log(centerX);
+		
+		for (let x = centerX; x <= centerX + offsetX && x >= centerX - offsetX; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? minY - 1 : maxY + 1);
+			this.vertices.push((i % 2 == 0) ? minY - offsetX : maxY + offsetX);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
@@ -191,7 +193,7 @@ class Canvas {
 			this.indices.push(this.indices.length);
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? maxY + 1 : minY - 1);
+			this.vertices.push((i % 2 == 0) ? maxY + offsetX : minY - offsetX);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
@@ -204,8 +206,8 @@ class Canvas {
 
 	renderGridY(centerY, minX, maxX, resY, offsetY) {
 		let i = 0;
-		for (let y = centerY; y < centerY + offsetY && y > centerY - offsetY; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
-			this.vertices.push((i % 2 == 0) ? minX - 1 : maxX + 1);
+		for (let y = centerY; y <= centerY + offsetY && y >= centerY - offsetY; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
+			this.vertices.push((i % 2 == 0) ? minX - offsetY : maxX + offsetY);
 			this.vertices.push(y);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
@@ -214,7 +216,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? maxX + 1 : minX - 1);
+			this.vertices.push((i % 2 == 0) ? maxX + offsetY : minX - offsetY);
 			this.vertices.push(y);
 			this.vertices.push(0.35);
 			this.vertices.push(0.35);
