@@ -91,13 +91,13 @@
 
 				canvas.renderLineX(-centerX - oneScaled, -centerX + oneScaled, 25000);
 				canvas.flush();
-				
+
 				console.log(oneScaled);
-				
-				canvas.renderGridX(-centerX + canvas.position.x * oneScaled, -centerY - oneScaled, -centerY + oneScaled, 1 / oneScaled, oneScaled);
+
+				canvas.renderGridX(-centerX + canvas.position.x * oneScaled, -centerY - oneScaled, -centerY + oneScaled, 1, oneScaled);
 				canvas.flush(true);
 
-				canvas.renderGridY(-centerY + canvas.position.y * oneScaled, -centerX - oneScaled, -centerX + oneScaled, 1 / oneScaled, oneScaled);
+				canvas.renderGridY(-centerY + canvas.position.y * oneScaled, -centerX - oneScaled, -centerX + oneScaled, 1, oneScaled);
 				canvas.flush(true);
 
 			}

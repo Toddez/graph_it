@@ -137,7 +137,7 @@ class Canvas {
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
-			this.vertices.push(x * x);
+			this.vertices.push(Math.sin(x));
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
 			this.vertices.push(0.15);
