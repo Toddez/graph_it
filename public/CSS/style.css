@@ -19,18 +19,27 @@ canvas {
 	left: 200px;
 	top: 0;
 	position: absolute;
-	background-color: rgb(242, 242, 242);
+	background-color: transparent;
+}
+
+#webgl {
+	z-index: 0;
+}
+
+#text {
+	z-index: 1;
 }
 
 #functions {
 	left: 0;
 	top: 0;
 	position: absolute;
-	width: 196px;
+	width: 200px;
 	height: 100%;
+	box-sizing: border-box;
 	border: none;
 	margin: none;
 	padding: none;
-	background-color: #fbfbfb;
 	resize: none;
+	background-color: #fbfbfb;
 }

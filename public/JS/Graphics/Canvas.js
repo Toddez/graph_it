@@ -6,7 +6,7 @@ class Canvas {
      * @param {String} id 
      * @param {Vector2} dimensions 
      */
-	constructor(id, dimensions, parent) {
+	constructor(id, dimensions, parent, gl) {
 		Canvas.canvases.push(this);
 
 		// Set members
@@ -19,11 +19,13 @@ class Canvas {
 
 		// Initialize canvas
 		this.createElement();
-		this.setupWebGL();
+		if (gl == true)
+			this.setupWebGL();
+		else
+			this.setup2d();
+
 		this.setDimensions();
-		this.setupMouse();
-		this.setupKeys();
-		this.setupScroll();
+		this.setupInput();
 	}
 
 	/**
@@ -52,6 +54,18 @@ class Canvas {
 		// Create arrays for vertices and indices
 		this.vertices = [];
 		this.indices = [];
+	}
+
+	/**
+	 * Setup 2d
+	 * @author Toddez 
+	 */
+	setup2d() {
+		// Grab 2d context
+		this.context2d = this.element.getContext('2d');
+
+		// Create array for text
+		this.text = [];
 	}
 
 	/**
@@ -170,23 +184,35 @@ class Canvas {
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
+			let trueIndex = Math.abs(x);
+			let color = new Color(0, 0, 0, Math.round(trueIndex / resX) % 5 == 0 ? 0.4 : 0.1);
+
 			this.vertices.push(x);
 			this.vertices.push((i % 2 == 0) ? minY - offsetX : maxY + offsetX);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.5);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
 
 			this.vertices.push(x);
 			this.vertices.push((i % 2 == 0) ? maxY + offsetX : minY - offsetX);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.5);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
+			i++;
+		}
+	}
+
+	renderTextX(centerX, minY, maxY, resX, offsetX) {
+		let i = 0;
+		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
+			this.text.push({ text: 'test', pos: new Vector2(x, 0) });
+
 			i++;
 		}
 	}
@@ -194,21 +220,24 @@ class Canvas {
 	renderGridY(centerY, minX, maxX, resY, offsetY) {
 		let i = 0;
 		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
+			let trueIndex = Math.abs(y);
+			let color = new Color(0, 0, 0, Math.round(trueIndex / resY) % 5 == 0 ? 0.4 : 0.1);
+
 			this.vertices.push((i % 2 == 0) ? minX - offsetY : maxX + offsetY);
 			this.vertices.push(y);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.5);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
 
 			this.vertices.push((i % 2 == 0) ? maxX + offsetY : minX - offsetY);
 			this.vertices.push(y);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.35);
-			this.vertices.push(0.5);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
 
 			this.indices.push(this.indices.length);
 			i++;
@@ -279,6 +308,22 @@ class Canvas {
 	}
 
 	/**
+	 * Clear 2d
+	 * @author Toddez
+	 */
+	flush2d() {
+		this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+		this.context2d.font = 'Arial 12px';
+
+		for (let i = 0; i < this.text.length; i++) {
+			let text = this.text[i];
+			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
+		}
+
+		this.text = [];
+	}
+
+	/**
 	 * @author Toddez
 	 * @param {Color} color 
 	 */
@@ -336,6 +381,117 @@ class Canvas {
 	}
 
 	/**
+	 * Set all callbacks for input
+	 * @author Toddez 
+	 */
+	setupInput() {
+		let self = this;
+
+		// Mouse
+		this.element.onmousemove = function (event) {
+			let rect = self.element.getBoundingClientRect();
+			Canvas.mousePos = new Vector2(event.clientX - rect.left, event.clientY - rect.top);
+
+			if (Canvas.firstMouseMove) {
+				Canvas.lastMousePos = Canvas.mousePos;
+				Canvas.firstMouseMove = false;
+			}
+		};
+
+		this.element.onmousedown = function () {
+			Canvas.mouseDown = true;
+		}
+
+		this.element.onmouseup = function () {
+			Canvas.mouseDown = false;
+		}
+
+		// Scroll
+		this.element.addEventListener('wheel', function (event) {
+			Canvas.scrollTotal = new Vector2(Canvas.scrollTotal.x + event.deltaX, Canvas.scrollTotal.y + event.deltaY);
+		}, false);
+	}
+
+	/**
+	 * Set listeners for mouse events
+	 * @author Toddez
+	 */
+	static setupMouse() {
+		Canvas.mouseDown = false;
+		Canvas.mousePos = new Vector2(0, 0);
+		Canvas.lastMousePos = new Vector2(0, 0);
+		Canvas.firstMouseMove = true;
+	}
+
+	/**
+	 * Set listener for scroll event
+	 * @author Toddez
+	 */
+	static setupScroll() {
+		Canvas.scrollTotal = new Vector2(0, 0);
+		Canvas.lastScroll = new Vector2(0, 0);
+	}
+
+	/**
+	 * Set listener for key events
+	 * @author Toddez
+	 */
+	static setupKeys() {
+		Canvas.keys = {};
+
+		$(window).on('keydown', function (event) {
+			let key = Canvas.keys[event.which];
+			if (key) {
+				key.down = true;
+				if (key.onDown)
+					key.onDown();
+			}
+		});
+
+		$(window).on('keyup', function (event) {
+			let key = Canvas.keys[event.which];
+			if (key) {
+				key.down = false;
+				if (key.onUp)
+					key.onUp();
+			}
+		});
+	}
+
+	static registerKey(keycode, onDown, onUp) {
+		Canvas.keys[keycode] = { down: false, onDown: onDown, onUp: onUp };
+	}
+
+	static getKeyDown(keycode) {
+		if (Canvas.keys[keycode])
+			return Canvas.keys[keycode].down;
+		else
+			return false;
+	}
+
+	/**
+	 * Returns the delta mouse position
+	 * @author Toddez
+	 * @returns {Vector2} delta
+	 */
+	static mouseDelta() {
+		let delta = new Vector2(Canvas.mousePos.x - Canvas.lastMousePos.x, Canvas.mousePos.y - Canvas.lastMousePos.y);
+		Canvas.lastMousePos = Canvas.mousePos;
+		return delta;
+	}
+
+	/**
+	 * Returns the delta scroll
+	 * @author Toddez
+	 * @returns {Vector2} delta
+	 */
+	static scrollDelta() {
+		let delta = new Vector2(Canvas.scrollTotal.x - Canvas.lastScroll.x, Canvas.scrollTotal.y - Canvas.lastScroll.y);
+		Canvas.lastScroll = Canvas.scrollTotal;
+		return delta;
+	}
+
+	/**
 	 * On window reseize, update all canvases' dimensions if fullscreen
 	 * @author Toddez
 	 */
@@ -346,110 +502,6 @@ class Canvas {
 					Canvas.canvases[i].fullscreen(true);
 			}
 	}
-
-	/**
-	 * Set listeners for mouse events
-	 * @author Toddez
-	 */
-	setupMouse() {
-		this.mouseDown = false;
-		this.mousePos = new Vector2(0, 0);
-		this.lastMousePos = new Vector2(0, 0);
-		this.firstMouseMove = true;
-
-		let self = this;
-		this.element.onmousemove = function (event) {
-			let rect = self.element.getBoundingClientRect();
-			self.mousePos = new Vector2(event.clientX - rect.left, event.clientY - rect.top);
-
-			if (self.firstMouseMove) {
-				self.lastMousePos = self.mousePos;
-				self.firstMouseMove = false;
-			}
-		};
-
-		this.element.onmousedown = function () {
-			self.mouseDown = true;
-		}
-
-		this.element.onmouseup = function () {
-			self.mouseDown = false;
-		}
-	}
-
-	/**
-	 * Set listener for scroll event
-	 * @author Toddez
-	 */
-	setupScroll() {
-		this.scrollTotal = new Vector2(0, 0);
-		this.lastScroll = new Vector2(0, 0);
-
-		let self = this;
-		this.element.addEventListener('wheel', function (event) {
-			self.scrollTotal = new Vector2(self.scrollTotal.x + event.deltaX, self.scrollTotal.y + event.deltaY);
-		}, false);
-	}
-
-	/**
-	 * Set listener for key events
-	 * @author Toddez
-	 */
-	setupKeys() {
-		this.keys = {};
-
-		let self = this;
-		$(window).on('keydown', function (event) {
-			let key = self.keys[event.which];
-			if (key) {
-				key.down = true;
-				if (key.onDown)
-					key.onDown();
-			}
-		});
-
-		$(window).on('keyup', function (event) {
-			let key = self.keys[event.which];
-			if (key) {
-				key.down = false;
-				if (key.onUp)
-					key.onUp();
-			}
-		});
-	}
-
-	registerKey(keycode, onDown, onUp) {
-		this.keys[keycode] = { down: false, onDown: onDown, onUp: onUp };
-	}
-
-	getKeyDown(keycode) {
-		if (this.keys[keycode])
-			return this.keys[keycode].down;
-		else
-			return false;
-	}
-
-	/**
-	 * Returns the delta mouse position
-	 * @author Toddez
-	 * @returns {Vector2} delta
-	 */
-	mouseDelta() {
-		let delta = new Vector2(this.mousePos.x - this.lastMousePos.x, this.mousePos.y - this.lastMousePos.y);
-		this.lastMousePos = this.mousePos;
-		return delta;
-	}
-
-	/**
-	 * Returns the delta scroll
-	 * @author Toddez
-	 * @returns {Vector2} delta
-	 */
-	scrollDelta() {
-		let delta = new Vector2(this.scrollTotal.x - this.lastScroll.x, this.scrollTotal.y - this.lastScroll.y);
-		this.lastScroll = this.scrollTotal;
-		return delta;
-	}
 }
 
 // Static variables
@@ -459,4 +511,9 @@ $(document).ready(function () {
 
 	// Set global callbacks
 	$(window).resize(Canvas.windowResizeCallback);
+
+	// Setup input
+	Canvas.setupMouse();
+	Canvas.setupKeys();
+	Canvas.setupScroll();
 });

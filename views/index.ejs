@@ -43,7 +43,8 @@
 	<script>
 		$(document).ready(function () {
 			let app = new Application(60, 60);
-			let canvas = new Canvas('test_canvas', new Vector2(500, 500));
+			let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
+			let text = new Canvas('2d', new Vector2(500, 500), null, false);
 			let functions = [];
 
 			app.onStart = function () {
@@ -52,36 +53,39 @@
 				canvas.setMargin(new Vector2(200, 0));
 				canvas.fullscreen(true);
 
+				text.setMargin(new Vector2(200, 0));
+				text.fullscreen(true);
+
 				let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
 				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 10);
 				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 10);
 
 				canvas.scale = new Vector2(xScale, yScale);
 
-				canvas.registerKey(16, null, null);
+				Canvas.registerKey(16, null, null);
 
 				$('#functions').on('input', function () {
 					functions = [];
 					let functionStrings = $('#functions').val().split('\n');
 					for (let i = 0; i < functionStrings.length; i++) {
 						if (functionStrings[i].length > 0)
-							functions.push(functionStrings[i]);
+							functions.push(functionStrings[i].trim());
 					}
 				});
 			};
 
 			app.onUpdate = function () {
-				let mouseDelta = canvas.mouseDelta();
-				let scrollDelta = canvas.scrollDelta();
+				let mouseDelta = Canvas.mouseDelta();
+				let scrollDelta = Canvas.scrollDelta();
 
-				if (canvas.mouseDown) {
+				if (Canvas.mouseDown) {
 					canvas.position.x += (mouseDelta.x / (canvas.dimensions.x - canvas.margin.x));
 					canvas.position.y -= (mouseDelta.y / (canvas.dimensions.y - canvas.margin.y));
 				}
 
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
 					let deltaX, deltaY;
-					if (canvas.getKeyDown(16) == true) {
+					if (Canvas.getKeyDown(16) == true) {
 						deltaX = scrollDelta.x * canvas.scale.x * canvas.scale.x * 10;
 						deltaY = scrollDelta.y * canvas.scale.y * canvas.scale.y * 10;
 					} else {
@@ -111,10 +115,13 @@
 
 				if (functions.length > 0) {
 					for (let i = 0; i < functions.length; i++) {
-						if (functions[i][0] == 'x') {
+						if (functions[i][0] == 'x') { // X
+
+						} else if (functions[i][0] == 'y') { // Y
+
+						} else if (functions[i][0] == '(') { // Point
 
 						}
-						// else if
 					}
 				}
 
@@ -123,26 +130,30 @@
 				}, new Color(1, 0, 0, 1));
 				canvas.flush();
 
-				//canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, function(y) {
-				//	return 0;
-				//});
-				//canvas.flush(true);
-
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
 					return 0;
-				}, new Color(0, 0, 0, 0.5));
+				}, new Color(0, 0, 0, 1));
 				canvas.flush(true);
 
 				canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, function (y) {
 					return 0;
-				}, new Color(0, 0, 0, 0.5));
+				}, new Color(0, 0, 0, 1));
 				canvas.flush(true);
 
-				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, 1, oneScaledX);
+				let min = Math.min(oneScaledX, oneScaledY);
+				let size = 100;
+				while (size > min * 0.2) {
+					size *= 0.1;
+				}
+
+				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				canvas.flush(true);
 
-				canvas.renderGridY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, 1, oneScaledY);
+				canvas.renderGridY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
 				canvas.flush(true);
+
+				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
+				text.flush2d();
 			}
 
 			app.start();
