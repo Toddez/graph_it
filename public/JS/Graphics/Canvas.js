@@ -154,7 +154,7 @@ class Canvas {
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
-			this.vertices.push(func(x));
+			this.vertices.push(func(x, 0));
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -170,7 +170,7 @@ class Canvas {
 
 		let resY = Math.abs(maxY - minY) / length;
 		for (let y = minY; y <= maxY; y += resY) {
-			this.vertices.push(func(y));
+			this.vertices.push(func(0, y));
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
