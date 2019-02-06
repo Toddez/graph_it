@@ -125,6 +125,9 @@
 					}
 				}
 
+				text.position = canvas.position;
+				text.scale = canvas.scale;
+
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, function (x) {
 					return Math.sin(x);
 				}, new Color(1, 0, 0, 1));

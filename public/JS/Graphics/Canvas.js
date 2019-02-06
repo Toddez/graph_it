@@ -211,7 +211,10 @@ class Canvas {
 	renderTextX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
-			this.text.push({ text: 'test', pos: new Vector2(x, 0) });
+			let textX = (this.position.x + x / offsetX) * (this.dimensions.x - this.margin.x) / 2;
+			let textY = -this.position.y * (this.dimensions.y - this.margin.y) / 2;
+
+			this.text.push({ text: x, pos: new Vector2(textX, textY) });
 
 			i++;
 		}
