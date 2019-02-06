@@ -46,6 +46,7 @@
 			let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
 			let text = new Canvas('2d', new Vector2(500, 500), null, false);
 			let functions = [];
+			let time = 0;
 
 			app.onStart = function () {
 				canvas.setupShaders(document.getElementById("VERT_SHADER").textContent, document.getElementById("FRAG_SHADER").textContent);
@@ -129,9 +130,14 @@
 				text.scale = canvas.scale;
 
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, function (x) {
-					return Math.sin(x);
+					return Math.sin(x + time);
 				}, new Color(1, 0, 0, 1));
 				canvas.flush();
+
+				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, function (x) {
+					return x * x * x;
+				}, new Color(0, 1, 0, 1));
+				canvas.flush(true);
 
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
 					return 0;
@@ -144,9 +150,25 @@
 				canvas.flush(true);
 
 				let min = Math.min(oneScaledX, oneScaledY);
-				let size = 100;
+				let size = Math.max(Math.round(min), 10);
+				while (size % 10 != 0) {
+					size--;
+				}
+
 				while (size > min * 0.2) {
 					size *= 0.1;
+				}
+
+				if (size > 1) {
+					centerX = Math.round(centerX);
+					while (centerX % size != 0) {
+						centerX--;
+					}
+
+					centerY = Math.round(centerY);
+					while (centerY % size != 0) {
+						centerY--;
+					}
 				}
 
 				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
@@ -158,6 +180,8 @@
 				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
 				text.flush2d();
+
+				time += 0.05;
 			}
 
 			app.start();

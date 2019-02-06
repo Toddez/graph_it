@@ -211,10 +211,14 @@ class Canvas {
 	renderTextX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
-			let textX = (this.position.x + x / offsetX) * (this.dimensions.x - this.margin.x) / 2;
-			let textY = -this.position.y * (this.dimensions.y - this.margin.y) / 2;
+			let trueIndex = Math.abs(x);
 
-			this.text.push({ text: Math.round(x * 100) / 100, pos: new Vector2(textX, textY) });
+			if (Math.round(trueIndex / resX) % 5 == 0) {
+				let textX = (this.position.x + x / offsetX) * (this.dimensions.x - this.margin.x) / 2;
+				let textY = -this.position.y * (this.dimensions.y - this.margin.y) / 2;
+
+				this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY) });
+			}
 
 			i++;
 		}
@@ -223,10 +227,14 @@ class Canvas {
 	renderTextY(centerY, minX, maxX, resY, offsetY) {
 		let i = 0;
 		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
-			let textX = this.position.x * (this.dimensions.x - this.margin.x) / 2;
-			let textY = (-this.position.y - y / offsetY) * (this.dimensions.y - this.margin.y) / 2;
+			let trueIndex = Math.abs(y);
 
-			this.text.push({ text: Math.round(y * 100) / 100, pos: new Vector2(textX, textY) });
+			if (Math.round(trueIndex / resY) % 5 == 0) {
+				let textX = this.position.x * (this.dimensions.x - this.margin.x) / 2;
+				let textY = (-this.position.y - y / offsetY) * (this.dimensions.y - this.margin.y) / 2;
+
+				this.text.push({ text: Math.round(y * 1000000) / 1000000, pos: new Vector2(textX, textY) });
+			}
 
 			i++;
 		}
@@ -328,7 +336,7 @@ class Canvas {
 	 */
 	flush2d() {
 		this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
-		this.context2d.font = 'Arial 12px';
+		this.context2d.font = 'Courier New monospace 15px';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
