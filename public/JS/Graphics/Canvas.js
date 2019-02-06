@@ -213,9 +213,9 @@ class Canvas {
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
 			let trueIndex = Math.abs(x);
 
-			if (Math.round(trueIndex / resX) % 5 == 0) {
-				let textX = (this.position.x + x / offsetX) * (this.dimensions.x - this.margin.x) / 2;
-				let textY = -this.position.y * (this.dimensions.y - this.margin.y) / 2;
+			if (Math.round(trueIndex / resX) % 5 == 0 && x != 0) {
+				let textX = (x / offsetX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
+				let textY = -this.position.y * this.scale.y * (this.dimensions.y - this.margin.y) / 2;
 
 				this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY) });
 			}
@@ -229,9 +229,9 @@ class Canvas {
 		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
 			let trueIndex = Math.abs(y);
 
-			if (Math.round(trueIndex / resY) % 5 == 0) {
-				let textX = this.position.x * (this.dimensions.x - this.margin.x) / 2;
-				let textY = (-this.position.y - y / offsetY) * (this.dimensions.y - this.margin.y) / 2;
+			if (Math.round(trueIndex / resY) % 5 == 0 && y != 0) {
+				let textX = this.position.x * this.scale.x * (this.dimensions.x - this.margin.x) / 2;
+				let textY = (-y / offsetY - this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
 
 				this.text.push({ text: Math.round(y * 1000000) / 1000000, pos: new Vector2(textX, textY) });
 			}
@@ -299,9 +299,13 @@ class Canvas {
 		this.gl.enableVertexAttribArray(color);
 
 		// Calculate matrix
-		let translationMatrix = Matrix3.translation(this.position.x, this.position.y);
-		let scaleMatrix = Matrix3.scaling(this.scale.x, this.scale.y);
-		let matrix = Matrix3.multiply(translationMatrix, scaleMatrix);
+		//let matrix = Matrix3.translation(this.position.x, this.position.y);
+		//matrix = Matrix3.multiply(matrix, Matrix3.translation(-this.position.x, -this.position.y));
+		//matrix = Matrix3.multiply(matrix, Matrix3.scaling(this.scale.x, this.scale.y));
+		//matrix = Matrix3.multiply(matrix, Matrix3.translation(this.position.x, this.position.y));
+
+		let matrix = Matrix3.scaling(this.scale.x, this.scale.y);
+		matrix = Matrix3.multiply(matrix, Matrix3.translation(this.position.x, this.position.y));
 
 		// Set matrix uniform
 		let matrixLocation = this.gl.getUniformLocation(this.shaderProgram, "uMatrix");
@@ -336,10 +340,15 @@ class Canvas {
 	 */
 	flush2d() {
 		this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
-		this.context2d.font = 'Courier New monospace 15px';
+
+		this.context2d.fillStyle = '#000';
+		this.context2d.textAlign = 'right';
+		this.context2d.textBaseline = 'top';
+		this.context2d.font = '20px Courier New';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
+
 			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
 		}
 
