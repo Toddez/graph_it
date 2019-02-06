@@ -67,17 +67,23 @@
 
 				$('#functions').on('input', function () {
 					functions = [];
-					let functionStrings = $('#functions').val().split('\n');
+					var functionStrings = $('#functions').val().split('\n');
 					for (let i = 0; i < functionStrings.length; i++) {
 						if (functionStrings[i].length > 0) {
-							let string = functionStrings[i].trim();
-							let func = 'evalFunc = function(x, y) { return ' + string + '; };';
 							try {
-								let evalFunc;
-								eval(func);
-								functions.push({ type: string[0], f: evalFunc });
+								let index = functions.length;
+								let string = functionStrings[i].trim();
+								let type = string[0];
+								let func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
+
+								try {
+									eval(func);
+								} catch {
+									console.log('reeee u');
+
+								}
 							} catch {
-								console.log('Invalid function', func);
+								console.log('Invalid function');
 							}
 						}
 					}
@@ -121,18 +127,24 @@
 				let oneScaledX = 1 / matrix[0];
 				let oneScaledY = 1 / matrix[4];
 
-				if (functions.length > 0)
+				canvas.flush();
+				if (functions.length > 0) {
 					for (let i = 0; i < functions.length; i++) {
 						if (functions[i].type == 'x') {
-							canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(0, 0, 1, 1));
-							canvas.flush();
+							try {
+								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 25000, functions[i].f, new Color(0, 0, 1, 1));
+								canvas.flush(true);
+							} catch {}
 						} else if (functions[i].type == 'y') {
-							canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 0, 1, 1));
-							canvas.flush();
+							try {
+								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 25000, functions[i].f, new Color(0, 0, 1, 1));
+								canvas.flush(true);
+							} catch {}
 						} else if (functions[i].type == '(') { // Point
 
 						}
 					}
+				}
 
 				text.position = canvas.position;
 				text.scale = canvas.scale;
