@@ -7,7 +7,7 @@
 </head>
 
 <body>
-	<textarea id="functions"></textarea>
+	<textarea id="functions">y=Math.sin(x + time)</textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 	 crossorigin="anonymous"></script>
@@ -65,7 +65,7 @@
 
 				Canvas.registerKey(16, null, null);
 
-				$('#functions').on('input', function () {
+				function checkFunctions() {
 					functions = [];
 					var functionStrings = $('#functions').val().split('\n');
 					for (let i = 0; i < functionStrings.length; i++) {
@@ -74,12 +74,15 @@
 								let index = functions.length;
 								let string = functionStrings[i].trim();
 								let type = string[0];
-								let func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
+								let func;
+								if (type == 'x' || type == 'y')
+									func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
+								else
+									func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(2, string.length) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
 
 								try {
 									eval(func);
 								} catch {
-									console.log('reeee u');
 
 								}
 							} catch {
@@ -87,7 +90,10 @@
 							}
 						}
 					}
-				});
+				}
+
+				$('#functions').on('input', checkFunctions);
+				$('#functions').ready(checkFunctions);
 			};
 
 			app.onUpdate = function () {
@@ -132,16 +138,19 @@
 					for (let i = 0; i < functions.length; i++) {
 						if (functions[i].type == 'x') {
 							try {
-								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 25000, functions[i].f, new Color(0, 0, 1, 1));
+								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 10000, functions[i].f, new Color(1, 0, 0, 1));
 								canvas.flush(true);
-							} catch {}
+							} catch { }
 						} else if (functions[i].type == 'y') {
 							try {
-								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 25000, functions[i].f, new Color(0, 0, 1, 1));
+								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 10000, functions[i].f, new Color(0, 1, 0, 1));
 								canvas.flush(true);
-							} catch {}
-						} else if (functions[i].type == '(') { // Point
-
+							} catch { }
+						} else if (functions[i].type == '(') {
+							try {
+								canvas.renderPoint(-centerX, functions[i].f, new Color(0, 0, 1, 1));
+								canvas.flush(true);
+							} catch { }
 						}
 					}
 				}
@@ -191,7 +200,7 @@
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
 				text.flush2d();
 
-				time += 0.05;
+				time += 1 / 60;
 			}
 
 			app.start();

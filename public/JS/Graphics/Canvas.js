@@ -181,6 +181,10 @@ class Canvas {
 		}
 	}
 
+	renderPoint() {
+		
+	}
+
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
