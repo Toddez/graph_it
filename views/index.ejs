@@ -122,8 +122,8 @@ y=Math.cos(time)
 					deltaX = Math.min(Math.max(0.01, Math.abs(deltaX)), 50) * Math.sign(deltaX);
 					deltaY = Math.min(Math.max(0.01, Math.abs(deltaY)), 50) * Math.sign(deltaY);
 
-					canvas.scale.x += (deltaX / ((canvas.dimensions.x - canvas.margin.x)));
-					canvas.scale.y += (deltaY / ((canvas.dimensions.y - canvas.margin.y)));
+					canvas.scale.x -= (deltaX / ((canvas.dimensions.x - canvas.margin.x)));
+					canvas.scale.y -= (deltaY / ((canvas.dimensions.y - canvas.margin.y)));
 
 					canvas.scale.x = Math.min(Math.max(0.0001, canvas.scale.x), 100);
 					canvas.scale.y = Math.min(Math.max(0.0001, canvas.scale.y), 100);
