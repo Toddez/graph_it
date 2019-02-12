@@ -319,9 +319,6 @@ class Canvas {
 				break;
 		}
 
-		console.log(drawMode);
-		
-
 		this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
 		// Reset buffers
@@ -399,6 +396,14 @@ class Canvas {
 			let height = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.offsetHeight);
 
 			this.dimensions = new Vector2(document.body.clientWidth, height);
+
+			let minDim = Math.min((this.dimensions.x - this.margin.x), (this.dimensions.y - this.margin.y));
+			let xScale = ((this.dimensions.y - this.margin.y) / (minDim));
+			let yScale = ((this.dimensions.x - this.margin.x) / (minDim));
+
+			let ratio = xScale / yScale;
+
+			this.scale.y = this.scale.x / ratio;			
 		} else {
 			if (this.originalDimensions)
 				this.dimensions = this.originalDimensions;

@@ -7,7 +7,7 @@
 </head>
 
 <body>
-<textarea id="functions">(Math.sin(time), Math.cos(time))
+	<textarea id="functions">(Math.sin(time), Math.cos(time))
 x=Math.sin(time)
 y=Math.cos(time)
 (Math.PI, 0)
@@ -63,8 +63,8 @@ y=Math.cos(time)
 				text.fullscreen(true);
 
 				let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
-				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 10);
-				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 10);
+				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 3);
+				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 3);
 
 				canvas.scale = new Vector2(xScale, yScale);
 
@@ -110,14 +110,8 @@ y=Math.cos(time)
 				}
 
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
-					let deltaX, deltaY;
-					if (Canvas.getKeyDown(16) == true) {
-						deltaX = scrollDelta.x * scrollDelta.x * scrollDelta.x;
-						deltaY = scrollDelta.y * scrollDelta.y * scrollDelta.y;
-					} else {
-						deltaX = (scrollDelta.x + scrollDelta.y) * Math.min(canvas.scale.x * canvas.scale.x * 0.5, canvas.scale.y * canvas.scale.y * 0.5) * 50;
-						deltaY = deltaX;
-					}
+					let deltaX = (scrollDelta.x + scrollDelta.y) * Math.min(canvas.scale.x * canvas.scale.x * 0.5, canvas.scale.y * canvas.scale.y * 0.5) * 50;
+					let deltaY = deltaX;
 
 					deltaX = Math.min(Math.max(0.01, Math.abs(deltaX)), 50) * Math.sign(deltaX);
 					deltaY = Math.min(Math.max(0.01, Math.abs(deltaY)), 50) * Math.sign(deltaY);
