@@ -10,8 +10,7 @@
 	<textarea id="functions">(Math.sin(time), Math.cos(time))
 x=Math.sin(time)
 y=Math.cos(time)
-(Math.PI, 0)
-(Math.E, 0)</textarea>
+(Math.PI, 0)</textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 	 crossorigin="anonymous"></script>
@@ -32,7 +31,7 @@ y=Math.cos(time)
 		void main(void) {
 			vec2 position = (uMatrix * vec3(aPos.x, aPos.y, 1)).xy;
 			gl_Position = vec4(position.xy, 0.0, 1.0); 
-			gl_PointSize = 4.0;
+			gl_PointSize = 10.0;
 			vColor = aColor;
 		}
 	</script>
@@ -63,8 +62,8 @@ y=Math.cos(time)
 				text.fullscreen(true);
 
 				let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
-				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 3);
-				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 3);
+				let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 5);
+				let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 5);
 
 				canvas.scale = new Vector2(xScale, yScale);
 
@@ -110,17 +109,15 @@ y=Math.cos(time)
 				}
 
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
-					let deltaX = (scrollDelta.x + scrollDelta.y) * Math.min(canvas.scale.x * canvas.scale.x * 0.5, canvas.scale.y * canvas.scale.y * 0.5) * 50;
-					let deltaY = deltaX;
+					let delta = (scrollDelta.x + scrollDelta.y);
+					
+					delta = 10 / ((Math.min(Math.max(0.01, Math.abs(delta)), 1) * Math.sign(delta)) / canvas.scale.x);
 
-					deltaX = Math.min(Math.max(0.01, Math.abs(deltaX)), 50) * Math.sign(deltaX);
-					deltaY = Math.min(Math.max(0.01, Math.abs(deltaY)), 50) * Math.sign(deltaY);
+					canvas.scale.x -= (delta / ((canvas.dimensions.x - canvas.margin.x)));
+					canvas.scale.y -= (delta / ((canvas.dimensions.y - canvas.margin.y)));
 
-					canvas.scale.x -= (deltaX / ((canvas.dimensions.x - canvas.margin.x)));
-					canvas.scale.y -= (deltaY / ((canvas.dimensions.y - canvas.margin.y)));
-
-					canvas.scale.x = Math.min(Math.max(0.0001, canvas.scale.x), 100);
-					canvas.scale.y = Math.min(Math.max(0.0001, canvas.scale.y), 100);
+					canvas.scale.x = Math.min(Math.max(0.000001, canvas.scale.x), 1000000);
+					canvas.scale.y = Math.min(Math.max(0.000001, canvas.scale.y), 1000000);
 				}
 
 				let matrix = Matrix3.multiply(Matrix3.scaling(canvas.scale.x, canvas.scale.y), Matrix3.translation(canvas.position.x, canvas.position.y));
@@ -132,22 +129,26 @@ y=Math.cos(time)
 				let oneScaledY = 1 / matrix[4];
 
 				canvas.flush();
+				text.flush2d();
 				if (functions.length > 0) {
 					for (let i = 0; i < functions.length; i++) {
 						if (functions[i].type == 'x') {
 							try {
-								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(1, 0, 0, 1));
+								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 250, functions[i].f, new Color(1, 0, 0, 1));
 								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == 'y') {
 							try {
-								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 1, 0, 1));
+								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 250, functions[i].f, new Color(0, 1, 0, 1));
 								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == '(') {
 							try {
 								canvas.renderPoint(functions[i].f, new Color(0, 0, 1, 1));
 								canvas.flush('POINT', true);
+
+								text.renderPointText(oneScaledX, oneScaledY, functions[i].f, '#00f');
+								text.flush2d(true);
 							} catch { }
 						}
 					}
@@ -196,7 +197,7 @@ y=Math.cos(time)
 
 				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
-				text.flush2d();
+				text.flush2d(true);
 
 				time += 1 / 60;
 			}

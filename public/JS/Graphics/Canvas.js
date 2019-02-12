@@ -160,6 +160,18 @@ class Canvas {
 		this.indices.push(this.indices.length);
 	}
 
+	renderPointText(oneX, oneY, func, color) {
+		let pos = func(0, 0);
+
+		if (!color)
+			color = '#f0f';
+
+		let textX = (pos.x / oneX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
+		let textY = -(pos.y / oneY + this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
+
+		this.text.push({ text: '(' + Math.round(pos.x * 1000000) / 1000000 + ',' + Math.round(pos.y * 1000000) / 1000000 + ')', pos: new Vector2(textX, textY), color: color, align: 'left',  base: 'bottom' });
+	}
+
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
 		let i = 0;
 		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
@@ -330,16 +342,30 @@ class Canvas {
 	 * Clear 2d
 	 * @author Toddez
 	 */
-	flush2d() {
-		this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+	flush2d(dontClear) {
+		if (!dontClear || dontClear == false)
+			this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
-		this.context2d.fillStyle = '#000';
-		this.context2d.textAlign = 'right';
-		this.context2d.textBaseline = 'top';
 		this.context2d.font = '20px Courier New';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
+
+			if (text.color)
+				this.context2d.fillStyle = text.color;
+			else
+				this.context2d.fillStyle = '#000';
+
+			if (text.align)
+				this.context2d.textAlign = text.align;
+			else
+				this.context2d.textAlign = 'right';
+
+			if (text.base)
+				this.context2d.textBaseline = text.base;
+			else
+				this.context2d.textBaseline = 'top';
+
 
 			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
 		}
@@ -403,7 +429,7 @@ class Canvas {
 
 			let ratio = xScale / yScale;
 
-			this.scale.y = this.scale.x / ratio;			
+			this.scale.y = this.scale.x / ratio;
 		} else {
 			if (this.originalDimensions)
 				this.dimensions = this.originalDimensions;
