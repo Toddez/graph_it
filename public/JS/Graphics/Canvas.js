@@ -110,43 +110,6 @@ class Canvas {
 		}
 	}
 
-	/**
-	 * Renders a square divided into length^2 squares
-	 * @author Toddez
-	 * @param {Number} min min corner
-	 * @param {Number} max max corner
-	 * @param {Number} length squares per side, total # squares = length ^ 2
-	 */
-	renderSquare(min, max, length) {
-		let res = Math.abs(max - min) / length;
-		for (let y = min; y <= max; y += res) {
-			for (let x = min; x <= max; x += res) {
-				this.vertices.push(x);
-				this.vertices.push(y);
-				this.vertices.push(0.15);
-				this.vertices.push(0.15);
-				this.vertices.push(0.15);
-				this.vertices.push(1);
-			}
-		}
-
-		for (let y = 0; y <= length; y++) {
-			for (let x = 0; x <= length; x++) {
-				if (y != length && x < length) {
-					this.indices.push(x + y * (length + 1));
-					this.indices.push(x + 1 + (y + 1) * (length + 1));
-					this.indices.push(x + 1 + y * (length + 1));
-				}
-
-				if (y != 0 && x < length) {
-					this.indices.push(x + y * (length + 1));
-					this.indices.push(x + 1 + y * (length + 1));
-					this.indices.push(x + (y - 1) * (length + 1));
-				}
-			}
-		}
-	}
-
 	renderLineX(minX, maxX, length, func, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
@@ -181,8 +144,20 @@ class Canvas {
 		}
 	}
 
-	renderPoint() {
-		
+	renderPoint(func, color) {
+		if (!color)
+			color = new Color(1, 0, 1, 1);
+
+		let pos = func(0, 0);
+
+		this.vertices.push(pos.x);
+		this.vertices.push(pos.y);
+		this.vertices.push(color.r);
+		this.vertices.push(color.g);
+		this.vertices.push(color.b);
+		this.vertices.push(color.a);
+
+		this.indices.push(this.indices.length);
 	}
 
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
@@ -275,7 +250,7 @@ class Canvas {
 	 * Flush all buffers and render them
 	 * @author Toddez
 	 */
-	flush(dontClear) {
+	flush(type, dontClear) {
 		// Create vertex buffer and bind vertices to it
 		var vertexBuffer = this.gl.createBuffer();
 		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
@@ -331,7 +306,23 @@ class Canvas {
 		this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
 		// Draw the triangles
-		this.gl.drawElements(this.gl.LINE_STRIP, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+		let drawMode;
+		switch (type) {
+			case 'LINE':
+				drawMode = this.gl.LINE_STRIP;
+				break;
+			case 'POINT':
+				drawMode = this.gl.POINTS;
+				break;
+			default:
+				drawMode = this.gl.LINE_STRIP;
+				break;
+		}
+
+		console.log(drawMode);
+		
+
+		this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
 		// Reset buffers
 		this.vertices = [];

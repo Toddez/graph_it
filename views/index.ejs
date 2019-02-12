@@ -7,7 +7,11 @@
 </head>
 
 <body>
-	<textarea id="functions">y=Math.sin(x + time)</textarea>
+<textarea id="functions">(Math.sin(time), Math.cos(time))
+x=Math.sin(time)
+y=Math.cos(time)
+(Math.PI, 0)
+(Math.E, 0)</textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 	 crossorigin="anonymous"></script>
@@ -28,6 +32,7 @@
 		void main(void) {
 			vec2 position = (uMatrix * vec3(aPos.x, aPos.y, 1)).xy;
 			gl_Position = vec4(position.xy, 0.0, 1.0); 
+			gl_PointSize = 4.0;
 			vColor = aColor;
 		}
 	</script>
@@ -77,9 +82,8 @@
 								let func;
 								if (type == 'x' || type == 'y')
 									func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-								else
-									func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(2, string.length) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-
+								else if (type == '(' && string[string.length - 1] == ')')
+									func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(1, string.length - 1) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
 								try {
 									eval(func);
 								} catch {
@@ -138,18 +142,18 @@
 					for (let i = 0; i < functions.length; i++) {
 						if (functions[i].type == 'x') {
 							try {
-								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 10000, functions[i].f, new Color(1, 0, 0, 1));
-								canvas.flush(true);
+								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(1, 0, 0, 1));
+								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == 'y') {
 							try {
-								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 10000, functions[i].f, new Color(0, 1, 0, 1));
-								canvas.flush(true);
+								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 1, 0, 1));
+								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == '(') {
 							try {
-								canvas.renderPoint(-centerX, functions[i].f, new Color(0, 0, 1, 1));
-								canvas.flush(true);
+								canvas.renderPoint(functions[i].f, new Color(0, 0, 1, 1));
+								canvas.flush('POINT', true);
 							} catch { }
 						}
 					}
@@ -161,12 +165,12 @@
 				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
 					return 0;
 				}, new Color(0, 0, 0, 1));
-				canvas.flush(true);
+				canvas.flush('LINE', true);
 
 				canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, function (y) {
 					return 0;
 				}, new Color(0, 0, 0, 1));
-				canvas.flush(true);
+				canvas.flush('LINE', true);
 
 				let min = Math.min(oneScaledX, oneScaledY);
 				let size = Math.max(Math.round(min), 10);
@@ -191,10 +195,10 @@
 				}
 
 				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
-				canvas.flush(true);
+				canvas.flush('LINE', true);
 
 				canvas.renderGridY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
-				canvas.flush(true);
+				canvas.flush('LINE', true);
 
 				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
