@@ -10,7 +10,8 @@
 	<textarea id="functions">(Math.sin(time), Math.cos(time))
 x=Math.sin(time)
 y=Math.cos(time)
-(Math.PI, 0)</textarea>
+(Math.sin(time), 0)
+(0, Math.cos(time))</textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
 	 crossorigin="anonymous"></script>
@@ -46,7 +47,7 @@ y=Math.cos(time)
 
 	<script>
 		$(document).ready(function () {
-			let app = new Application(60, 60);
+			let app = new Application(30, 30);
 			let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
 			let text = new Canvas('2d', new Vector2(500, 500), null, false);
 			let functions = [];
@@ -110,7 +111,7 @@ y=Math.cos(time)
 
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
 					let delta = (scrollDelta.x + scrollDelta.y);
-					
+
 					delta = 10 / ((Math.min(Math.max(0.01, Math.abs(delta)), 1) * Math.sign(delta)) / canvas.scale.x);
 
 					canvas.scale.x -= (delta / ((canvas.dimensions.x - canvas.margin.x)));
@@ -197,6 +198,8 @@ y=Math.cos(time)
 
 				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
+
+				text.text.push({ text: 'Graph it - WebGL', pos: new Vector2(-(canvas.dimensions.x - canvas.margin.x) / 2, -(canvas.dimensions.y - canvas.margin.y) / 2), color: '#000', align: 'left', base: 'top', stroke: '#fff' });
 				text.flush2d(true);
 
 				time += 1 / 60;

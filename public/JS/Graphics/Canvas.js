@@ -169,7 +169,7 @@ class Canvas {
 		let textX = (pos.x / oneX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY + this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round(pos.x * 1000000) / 1000000 + ',' + Math.round(pos.y * 1000000) / 1000000 + ')', pos: new Vector2(textX, textY), color: color, align: 'left',  base: 'bottom' });
+		this.text.push({ text: '(' + Math.round(pos.x * 1000000) / 1000000 + ',' + Math.round(pos.y * 1000000) / 1000000 + ')', pos: new Vector2(textX, textY), color: color, align: 'left', base: 'bottom' });
 	}
 
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
@@ -366,8 +366,16 @@ class Canvas {
 			else
 				this.context2d.textBaseline = 'top';
 
+			if (text.stroke) {
+				this.context2d.strokeStyle = text.stroke;
+				this.context2d.strokeText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
+			} else {
+				this.context2d.strokeStyle = '#000';
+			}
 
 			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
+
+
 		}
 
 		this.text = [];
