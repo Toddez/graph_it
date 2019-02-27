@@ -22,7 +22,7 @@ y=cos(time)</textarea>
 
 	<script>
 		$(document).ready(function () {
-			let app = new Application(30, 30);
+			let app = new Application(60, 60);
 			let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
 			let text = new Canvas('2d', new Vector2(500, 500), null, false);
 			let graph = new Graph(canvas, text);
@@ -73,13 +73,27 @@ y=cos(time)</textarea>
 					canvas.position.y -= ((mouseDelta.y * 2) / (canvas.dimensions.y - canvas.margin.y) * (1 / canvas.scale.y));
 				}
 
+				let mousePosX = ((Canvas.mousePos.x - ( canvas.position.x + (canvas.dimensions.x - canvas.margin.x)/2))) * 2 / (canvas.dimensions.x - canvas.margin.x) * (1 / canvas.scale.x) - canvas.position.x;
+
+				let mousePosY = ((Canvas.mousePos.y - ( canvas.position.y + (canvas.dimensions.y - canvas.margin.y)/2))) * 2 / (canvas.dimensions.y - canvas.margin.y) * (1 / canvas.scale.y) - canvas.position.y;
+
 				if (Math.abs(scrollDelta.x) + Math.abs(scrollDelta.y) > 0) {
 					let delta = (scrollDelta.x + scrollDelta.y);
 
 					delta = 10 / ((Math.min(Math.max(0.01, Math.abs(delta)), 1) * Math.sign(delta)) / canvas.scale.x);
 
-					canvas.scale.x -= (delta / ((canvas.dimensions.x - canvas.margin.x)));
-					canvas.scale.y -= (delta / ((canvas.dimensions.y - canvas.margin.y)));
+					let xDiff = (delta / ((canvas.dimensions.x - canvas.margin.x)));
+					let yDiff = (delta / ((canvas.dimensions.y - canvas.margin.y)));
+
+					canvas.scale.x -= xDiff;
+					canvas.scale.y -= yDiff;
+
+					let deltaMousePosX = (((Canvas.mousePos.x - ( canvas.position.x + (canvas.dimensions.x - canvas.margin.x)/2))) * 2 / (canvas.dimensions.x - canvas.margin.x) * (1 / canvas.scale.x) - canvas.position.x) - mousePosX;
+
+					let deltaMousePosY = (((Canvas.mousePos.y - ( canvas.position.y + (canvas.dimensions.y - canvas.margin.y)/2))) * 2 / (canvas.dimensions.y - canvas.margin.y) * (1 / canvas.scale.y) - canvas.position.y) - mousePosY;
+
+					canvas.position.x += deltaMousePosX;
+					canvas.position.y -= deltaMousePosY;
 
 					canvas.scale.x = Math.min(Math.max(0.000001, canvas.scale.x), 1000000);
 					canvas.scale.y = Math.min(Math.max(0.000001, canvas.scale.y), 1000000);
@@ -88,7 +102,7 @@ y=cos(time)</textarea>
 				graph.time = time;
 				graph.render();
 
-				time += 1 / 60;
+				time += 1 / app.ups;
 			}
 
 			app.start();
