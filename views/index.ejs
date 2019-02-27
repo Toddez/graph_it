@@ -13,8 +13,8 @@ y=Math.cos(time)
 (Math.sin(time), 0)
 (0, Math.cos(time))</textarea>
 
-	<script src="https://code.jquery.com/jquery-3.3.1.js" integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
-	 crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.3.1.js"
+		integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
 	<script src="JS/Math/Vector2.js"></script>
 	<script src="JS/Math/Matrix3.js"></script>
 	<script src="JS/Application/Application.js"></script>
@@ -52,6 +52,34 @@ y=Math.cos(time)
 			let text = new Canvas('2d', new Vector2(500, 500), null, false);
 			let functions = [];
 			let time = 0;
+			let lastInput = 0;
+			let inputChanged = false;
+
+			function checkFunctions() {
+				functions = [];
+				var functionStrings = $('#functions').val().split('\n');
+				for (let i = 0; i < functionStrings.length; i++) {
+					if (functionStrings[i].length > 0) {
+						try {
+							let index = functions.length;
+							let string = functionStrings[i].trim();
+							let type = string[0];
+							let func;
+							if (type == 'x' || type == 'y')
+								func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
+							else if (type == '(' && string[string.length - 1] == ')')
+								func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(1, string.length - 1) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
+							try {
+								eval(func);
+							} catch {
+
+							}
+						} catch {
+							console.log('Invalid function');
+						}
+					}
+				}
+			}
 
 			app.onStart = function () {
 				canvas.setupShaders(document.getElementById("VERT_SHADER").textContent, document.getElementById("FRAG_SHADER").textContent);
@@ -70,37 +98,19 @@ y=Math.cos(time)
 
 				Canvas.registerKey(16, null, null);
 
-				function checkFunctions() {
-					functions = [];
-					var functionStrings = $('#functions').val().split('\n');
-					for (let i = 0; i < functionStrings.length; i++) {
-						if (functionStrings[i].length > 0) {
-							try {
-								let index = functions.length;
-								let string = functionStrings[i].trim();
-								let type = string[0];
-								let func;
-								if (type == 'x' || type == 'y')
-									func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-								else if (type == '(' && string[string.length - 1] == ')')
-									func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(1, string.length - 1) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-								try {
-									eval(func);
-								} catch {
-
-								}
-							} catch {
-								console.log('Invalid function');
-							}
-						}
-					}
-				}
-
-				$('#functions').on('input', checkFunctions);
+				$('#functions').on('input', function () {
+					inputChanged = true;
+					lastInput = time;
+				});
 				$('#functions').ready(checkFunctions);
 			};
 
 			app.onUpdate = function () {
+				if (inputChanged == true && time - lastInput >= 0.15) {
+					checkFunctions();
+					inputChanged = false;
+				}
+
 				let mouseDelta = Canvas.mouseDelta();
 				let scrollDelta = Canvas.scrollDelta();
 
@@ -135,12 +145,12 @@ y=Math.cos(time)
 					for (let i = 0; i < functions.length; i++) {
 						if (functions[i].type == 'x') {
 							try {
-								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 250, functions[i].f, new Color(1, 0, 0, 1));
+								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(1, 0, 0, 1));
 								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == 'y') {
 							try {
-								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 250, functions[i].f, new Color(0, 1, 0, 1));
+								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 1, 0, 1));
 								canvas.flush('LINE', true);
 							} catch { }
 						} else if (functions[i].type == '(') {
