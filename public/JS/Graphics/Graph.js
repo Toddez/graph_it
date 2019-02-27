@@ -70,7 +70,7 @@ class Graph {
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
 
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(1, 0, 0, 1));
+						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, this.gl.dimensions.y, functions[i].f, new Color(1, 0, 0, 1));
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == 'y') {
@@ -80,7 +80,7 @@ class Graph {
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
 
-						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 1, 0, 1));
+						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, this.gl.dimensions.x, functions[i].f, new Color(0, 1, 0, 1));
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == '(') {
