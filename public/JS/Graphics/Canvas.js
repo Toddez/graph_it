@@ -93,23 +93,6 @@ class Canvas {
 		this.gl.useProgram(this.shaderProgram);
 	}
 
-	/**
-	 * Render a single triangle
-	 * @author Toddez
-	 * @param {Array} verts 
-	 */
-	renderTriangle(verts, colors) {
-		for (let i = 0; i < verts.length; i++) {
-			this.vertices.push(verts[i].x);
-			this.vertices.push(verts[i].y);
-			this.vertices.push(colors[i].r);
-			this.vertices.push(colors[i].g);
-			this.vertices.push(colors[i].b);
-			this.vertices.push(colors[i].a);
-			this.indices.push(this.indices.length);
-		}
-	}
-
 	renderLineX(minX, maxX, length, func, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
