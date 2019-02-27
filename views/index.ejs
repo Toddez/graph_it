@@ -209,7 +209,6 @@ y=Math.cos(time)
 				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
 
-				text.text.push({ text: 'Graph it - WebGL', pos: new Vector2(-(canvas.dimensions.x - canvas.margin.x) / 2, -(canvas.dimensions.y - canvas.margin.y) / 2), color: '#000', align: 'left', base: 'top', stroke: '#fff' });
 				text.flush2d(true);
 
 				time += 1 / 60;
