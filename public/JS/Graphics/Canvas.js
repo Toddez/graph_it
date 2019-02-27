@@ -71,7 +71,7 @@ class Canvas {
 	/**
 	 * Creates shader program for canvas
 	 * @author Toddez
-	 * @param {String} vertex 
+	 * @param {String} vertex
 	 * @param {String} fragment 
 	 */
 	setupShaders(vertex, fragment) {
@@ -85,11 +85,12 @@ class Canvas {
 		this.gl.shaderSource(fragmentShader, fragment);
 		this.gl.compileShader(fragmentShader);
 
-		// Create shader program, attach shaders and use the shader program
+		// Create shader programs, attach shaders
 		this.shaderProgram = this.gl.createProgram();
 		this.gl.attachShader(this.shaderProgram, vertexShader);
 		this.gl.attachShader(this.shaderProgram, fragmentShader);
 		this.gl.linkProgram(this.shaderProgram);
+
 		this.gl.useProgram(this.shaderProgram);
 	}
 
@@ -100,7 +101,7 @@ class Canvas {
 		let resX = Math.abs(maxX - minX) / length;
 		for (let x = minX; x <= maxX; x += resX) {
 			this.vertices.push(x);
-			this.vertices.push(func(x, 0));
+			this.vertices.push(0);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -116,7 +117,7 @@ class Canvas {
 
 		let resY = Math.abs(maxY - minY) / length;
 		for (let y = minY; y <= maxY; y += resY) {
-			this.vertices.push(func(0, y));
+			this.vertices.push(0);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -127,14 +128,12 @@ class Canvas {
 		}
 	}
 
-	renderPoint(func, color) {
+	renderPoint(color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
 
-		let pos = func(0, 0);
-
-		this.vertices.push(pos.x);
-		this.vertices.push(pos.y);
+		this.vertices.push(0);
+		this.vertices.push(0);
 		this.vertices.push(color.r);
 		this.vertices.push(color.g);
 		this.vertices.push(color.b);
@@ -143,9 +142,7 @@ class Canvas {
 		this.indices.push(this.indices.length);
 	}
 
-	renderPointText(oneX, oneY, func, color) {
-		let pos = func(0, 0);
-
+	renderPointText(oneX, oneY, pos, color) {
 		if (!color)
 			color = '#f0f';
 
@@ -245,76 +242,77 @@ class Canvas {
 	 * Flush all buffers and render them
 	 * @author Toddez
 	 */
-	flush(type, dontClear) {
-		// Create vertex buffer and bind vertices to it
-		var vertexBuffer = this.gl.createBuffer();
-		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
-		this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
-		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
+	flush(type, dontClear, vertex, fragment, time) {
+		try {
+			let drawMode;
+			switch (type) {
+				case 'LINE':
+					drawMode = this.gl.LINE_STRIP;
+					break;
+				case 'POINT':
+					drawMode = this.gl.POINTS;
+					break;
+				default:
+					drawMode = 'CLEAR';
+					break;
+			}
 
-		// Create index buffer and bind indices to it
-		var indexBuffer = this.gl.createBuffer();
-		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
-		this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.STATIC_DRAW);
-		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
+			if (type != 'CLEAR') {
+				this.setupShaders(vertex, fragment);
 
-		// Bind buffers
-		this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
-		this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+				// Create vertex buffer and bind vertices to it
+				var vertexBuffer = this.gl.createBuffer();
+				this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+				this.gl.bufferData(this.gl.ARRAY_BUFFER, new Float32Array(this.vertices), this.gl.STATIC_DRAW);
+				this.gl.bindBuffer(this.gl.ARRAY_BUFFER, null);
 
-		// Set aPos attrib
-		var pos = this.gl.getAttribLocation(this.shaderProgram, "aPos");
-		this.gl.vertexAttribPointer(pos, 2, this.gl.FLOAT, false, 24, 0);
-		this.gl.enableVertexAttribArray(pos);
+				// Create index buffer and bind indices to it
+				var indexBuffer = this.gl.createBuffer();
+				this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+				this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER, new Uint16Array(this.indices), this.gl.STATIC_DRAW);
+				this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, null);
 
-		// Set aColor attrib
-		var color = this.gl.getAttribLocation(this.shaderProgram, "aColor");
-		this.gl.vertexAttribPointer(color, 4, this.gl.FLOAT, false, 24, 8);
-		this.gl.enableVertexAttribArray(color);
+				// Bind buffers
+				this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vertexBuffer);
+				this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 
-		// Calculate matrix
-		//let matrix = Matrix3.translation(this.position.x, this.position.y);
-		//matrix = Matrix3.multiply(matrix, Matrix3.translation(-this.position.x, -this.position.y));
-		//matrix = Matrix3.multiply(matrix, Matrix3.scaling(this.scale.x, this.scale.y));
-		//matrix = Matrix3.multiply(matrix, Matrix3.translation(this.position.x, this.position.y));
+				// Set aPos attrib
+				var pos = this.gl.getAttribLocation(this.shaderProgram, "aPos");
+				this.gl.vertexAttribPointer(pos, 2, this.gl.FLOAT, false, 24, 0);
+				this.gl.enableVertexAttribArray(pos);
 
-		let matrix = Matrix3.scaling(this.scale.x, this.scale.y);
-		matrix = Matrix3.multiply(matrix, Matrix3.translation(this.position.x, this.position.y));
+				// Set aColor attrib
+				var color = this.gl.getAttribLocation(this.shaderProgram, "aColor");
+				this.gl.vertexAttribPointer(color, 4, this.gl.FLOAT, false, 24, 8);
+				this.gl.enableVertexAttribArray(color);
 
-		// Set matrix uniform
-		let matrixLocation = this.gl.getUniformLocation(this.shaderProgram, "uMatrix");
-		this.gl.uniformMatrix3fv(matrixLocation, false, matrix);
+				let matrix = Matrix3.scaling(this.scale.x, this.scale.y);
+				matrix = Matrix3.multiply(matrix, Matrix3.translation(this.position.x, this.position.y));
 
-		// Clear to background color
-		if (!dontClear) {
-			if (this.background)
-				this.gl.clearColor(this.background.r, this.background.g, this.background.b, this.background.a);
-			else
-				this.gl.clearColor(1, 0, 1, 1);
+				// Set matrix uniform
+				let matrixLocation = this.gl.getUniformLocation(this.shaderProgram, "uMatrix");
+				this.gl.uniformMatrix3fv(matrixLocation, false, matrix);
+			}
 
-			// Enable depth, clear color and depth buffers
-			this.gl.enable(this.gl.DEPTH_TEST);
-			this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
-		}
+			// Clear to background color
+			if (!dontClear) {
+				if (this.background)
+					this.gl.clearColor(this.background.r, this.background.g, this.background.b, this.background.a);
+				else
+					this.gl.clearColor(1, 0, 1, 1);
 
-		// Set width and height of WebGL's viewport
-		this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+				// Enable depth, clear color and depth buffers
+				this.gl.enable(this.gl.DEPTH_TEST);
+				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
+			}
 
-		// Draw the triangles
-		let drawMode;
-		switch (type) {
-			case 'LINE':
-				drawMode = this.gl.LINE_STRIP;
-				break;
-			case 'POINT':
-				drawMode = this.gl.POINTS;
-				break;
-			default:
-				drawMode = this.gl.LINE_STRIP;
-				break;
-		}
+			// Set width and height of WebGL's viewport
+			this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
-		this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+			if (type != 'CLEAR') {
+				this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+			}
+		} catch { }
 
 		// Reset buffers
 		this.vertices = [];

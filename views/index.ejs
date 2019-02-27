@@ -7,11 +7,9 @@
 </head>
 
 <body>
-	<textarea id="functions">(Math.sin(time), Math.cos(time))
-x=Math.sin(time)
-y=Math.cos(time)
-(Math.sin(time), 0)
-(0, Math.cos(time))</textarea>
+	<textarea id="functions">(sin(time), cos(time))
+x=sin(time)
+y=cos(time)</textarea>
 
 	<script src="https://code.jquery.com/jquery-3.3.1.js"
 		integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60=" crossorigin="anonymous"></script>
@@ -20,69 +18,25 @@ y=Math.cos(time)
 	<script src="JS/Application/Application.js"></script>
 	<script src="JS/Graphics/Color.js"></script>
 	<script src="JS/Graphics/Canvas.js"></script>
-
-	<script type="glsl" id="VERT_SHADER">
-		attribute vec2 aPos; 
-		attribute vec4 aColor; 
-		
-		uniform mat3 uMatrix;
-
-		varying lowp vec4 vColor;
-		
-		void main(void) {
-			vec2 position = (uMatrix * vec3(aPos.x, aPos.y, 1)).xy;
-			gl_Position = vec4(position.xy, 0.0, 1.0); 
-			gl_PointSize = 10.0;
-			vColor = aColor;
-		}
-	</script>
-
-	<script type="glsl" id="FRAG_SHADER">
-		varying lowp vec4 vColor;
-		
-		void main(void) {
-			gl_FragColor = vColor;
-		}
-	</script>
+	<script src="JS/Graphics/Graph.js"></script>
 
 	<script>
 		$(document).ready(function () {
 			let app = new Application(30, 30);
 			let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
 			let text = new Canvas('2d', new Vector2(500, 500), null, false);
-			let functions = [];
+			let graph = new Graph(canvas, text);
+
 			let time = 0;
 			let lastInput = 0;
 			let inputChanged = false;
 
 			function checkFunctions() {
-				functions = [];
 				var functionStrings = $('#functions').val().split('\n');
-				for (let i = 0; i < functionStrings.length; i++) {
-					if (functionStrings[i].length > 0) {
-						try {
-							let index = functions.length;
-							let string = functionStrings[i].trim();
-							let type = string[0];
-							let func;
-							if (type == 'x' || type == 'y')
-								func = 'let funcS = function(x, y) { return ' + string.substring(2, string.length) + '; }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-							else if (type == '(' && string[string.length - 1] == ')')
-								func = 'let funcS = function(x, y) { return new Vector2(' + string.substring(1, string.length - 1) + '); }; functions[parseInt(' + index + ')] = {type: "' + type + '", f: funcS};';
-							try {
-								eval(func);
-							} catch {
-
-							}
-						} catch {
-							console.log('Invalid function');
-						}
-					}
-				}
+				graph.setFunctions(functionStrings);
 			}
 
 			app.onStart = function () {
-				canvas.setupShaders(document.getElementById("VERT_SHADER").textContent, document.getElementById("FRAG_SHADER").textContent);
 				canvas.setBackground(new Color(0.952, 0.952, 0.952, 1));
 				canvas.setMargin(new Vector2(200, 0));
 				canvas.fullscreen(true);
@@ -131,85 +85,8 @@ y=Math.cos(time)
 					canvas.scale.y = Math.min(Math.max(0.000001, canvas.scale.y), 1000000);
 				}
 
-				let matrix = Matrix3.multiply(Matrix3.scaling(canvas.scale.x, canvas.scale.y), Matrix3.translation(canvas.position.x, canvas.position.y));
-
-				let centerX = matrix[6] / matrix[0];
-				let centerY = matrix[7] / matrix[4];
-
-				let oneScaledX = 1 / matrix[0];
-				let oneScaledY = 1 / matrix[4];
-
-				canvas.flush();
-				text.flush2d();
-				if (functions.length > 0) {
-					for (let i = 0; i < functions.length; i++) {
-						if (functions[i].type == 'x') {
-							try {
-								canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1000, functions[i].f, new Color(1, 0, 0, 1));
-								canvas.flush('LINE', true);
-							} catch { }
-						} else if (functions[i].type == 'y') {
-							try {
-								canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1000, functions[i].f, new Color(0, 1, 0, 1));
-								canvas.flush('LINE', true);
-							} catch { }
-						} else if (functions[i].type == '(') {
-							try {
-								canvas.renderPoint(functions[i].f, new Color(0, 0, 1, 1));
-								canvas.flush('POINT', true);
-
-								text.renderPointText(oneScaledX, oneScaledY, functions[i].f, '#00f');
-								text.flush2d(true);
-							} catch { }
-						}
-					}
-				}
-
-				text.position = canvas.position;
-				text.scale = canvas.scale;
-
-				canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
-					return 0;
-				}, new Color(0, 0, 0, 1));
-				canvas.flush('LINE', true);
-
-				canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, function (y) {
-					return 0;
-				}, new Color(0, 0, 0, 1));
-				canvas.flush('LINE', true);
-
-				let min = Math.min(oneScaledX, oneScaledY);
-				let size = Math.max(Math.round(min), 10);
-				while (size % 10 != 0) {
-					size--;
-				}
-
-				while (size > min * 0.2) {
-					size *= 0.1;
-				}
-
-				if (size > 1) {
-					centerX = Math.round(centerX);
-					while (centerX % size != 0) {
-						centerX--;
-					}
-
-					centerY = Math.round(centerY);
-					while (centerY % size != 0) {
-						centerY--;
-					}
-				}
-
-				canvas.renderGridX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
-				canvas.flush('LINE', true);
-
-				canvas.renderGridY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
-				canvas.flush('LINE', true);
-
-				text.renderTextX(Math.round((-centerX)), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
-				text.renderTextY(Math.round((-centerY)), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
-
-				text.flush2d(true);
+				graph.time = time;
+				graph.render();
 
 				time += 1 / 60;
 			}
