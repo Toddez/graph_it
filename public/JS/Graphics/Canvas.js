@@ -153,30 +153,7 @@ class Canvas {
 	}
 
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
-		let i = 0;
-		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
-			let trueIndex = Math.abs(x);
-			let color = new Color(0, 0, 0, Math.round(trueIndex / resX) % 5 == 0 ? 0.4 : 0.1);
 
-			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? minY : maxY);
-			this.vertices.push(color.r);
-			this.vertices.push(color.g);
-			this.vertices.push(color.b);
-			this.vertices.push(color.a);
-
-			this.indices.push(this.indices.length);
-
-			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? maxY : minY);
-			this.vertices.push(color.r);
-			this.vertices.push(color.g);
-			this.vertices.push(color.b);
-			this.vertices.push(color.a);
-
-			this.indices.push(this.indices.length);
-			i++;
-		}
 	}
 
 	renderTextX(centerX, minY, maxY, resX, offsetX) {
@@ -188,7 +165,7 @@ class Canvas {
 				let textX = (x / offsetX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
 				let textY = -this.position.y * this.scale.y * (this.dimensions.y - this.margin.y) / 2;
 
-				this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY) });
+				this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff' });
 			}
 
 			i++;
@@ -204,7 +181,7 @@ class Canvas {
 				let textX = this.position.x * this.scale.x * (this.dimensions.x - this.margin.x) / 2;
 				let textY = (-y / offsetY - this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
 
-				this.text.push({ text: Math.round(y * 1000000) / 1000000, pos: new Vector2(textX, textY) });
+				this.text.push({ text: Math.round(y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff' });
 			}
 
 			i++;
@@ -215,7 +192,9 @@ class Canvas {
 		let i = 0;
 		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
 			let trueIndex = Math.abs(y);
-			let color = new Color(0, 0, 0, Math.round(trueIndex / resY) % 5 == 0 ? 0.4 : 0.1);
+			let color = new Color(0.15, 0.15, 0.15, 1);
+			if (Math.round(trueIndex / resY) % 5 == 0)
+				color.r = color.g = color.b = 0.3;
 
 			this.vertices.push((i % 2 == 0) ? minX : maxX);
 			this.vertices.push(y);
@@ -327,7 +306,7 @@ class Canvas {
 		if (!dontClear || dontClear == false)
 			this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
-		this.context2d.font = '20px Courier New';
+		this.context2d.font = '14px Courier New';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
@@ -335,7 +314,7 @@ class Canvas {
 			if (text.color)
 				this.context2d.fillStyle = text.color;
 			else
-				this.context2d.fillStyle = '#000';
+				this.context2d.fillStyle = '#fff';
 
 			if (text.align)
 				this.context2d.textAlign = text.align;
@@ -351,12 +330,10 @@ class Canvas {
 				this.context2d.strokeStyle = text.stroke;
 				this.context2d.strokeText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
 			} else {
-				this.context2d.strokeStyle = '#000';
+				this.context2d.strokeStyle = '#fff';
 			}
 
 			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
-
-
 		}
 
 		this.text = [];
