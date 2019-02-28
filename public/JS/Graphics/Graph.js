@@ -12,8 +12,10 @@ class Graph {
 
 		this.functions = new Array();
 
-		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; varying lowp vec4 vColor; void main(void) { float x = aPos.x; float y = aPos.y; x = X; y = Y; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; gl_Position = vec4(position.xy, 0.0, 1.0); vColor = aColor; }';
+		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; varying lowp vec4 vColor; void main(void) { float x = aPos.x; float y = aPos.y; x = X; y = Y; float z = 0.0; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; vec4 color = aColor; if (abs(position.x) > 1.1 || abs(position.y) > 1.1) { color = vec4(0.0, 0.0, 0.0, 0.0); z = 1.0; } gl_Position = vec4(position.xy, z, 1.0); vColor = color; }';
+
 		this.pointShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; varying lowp vec4 vColor; void main(void) { vec2 pos = vec2POS; vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy; gl_Position = vec4(position.xy, 0.0, 1.0); vColor = aColor; gl_PointSize = 10.0; }';
+
 		this.fragmentShader = 'varying lowp vec4 vColor; void main(void) { gl_FragColor = vColor; }';
 	}
 
@@ -70,7 +72,7 @@ class Graph {
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
 
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, this.gl.dimensions.y - this.gl.margin.y, functions[i].f, new Color(1, 0, 0, 1));
+						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, canvas.dimensions.y - canvas.margin.y, new Color(1, 0, 0, 1));
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == 'y') {
@@ -80,7 +82,7 @@ class Graph {
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
 
-						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, this.gl.dimensions.x - this.gl.margin.x, functions[i].f, new Color(0, 1, 0, 1));
+						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, canvas.dimensions.x - canvas.margin.y, new Color(0, 1, 0, 1));
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == '(') {
@@ -107,14 +109,10 @@ class Graph {
 
 		let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-		canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, function (x) {
-			return 0;
-		}, new Color(0, 0, 0, 1));
+		canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 1, new Color(0, 0, 0, 1));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
-		canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, function (y) {
-			return 0;
-		}, new Color(0, 0, 0, 1));
+		canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 1, new Color(0, 0, 0, 1));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
 		let min = Math.min(oneScaledX, oneScaledY);

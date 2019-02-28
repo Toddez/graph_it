@@ -94,7 +94,7 @@ class Canvas {
 		this.gl.useProgram(this.shaderProgram);
 	}
 
-	renderLineX(minX, maxX, length, func, color) {
+	renderLineX(minX, maxX, length, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
 
@@ -111,7 +111,7 @@ class Canvas {
 		}
 	}
 
-	renderLineY(minY, maxY, length, func, color) {
+	renderLineY(minY, maxY, length, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
 
@@ -159,7 +159,7 @@ class Canvas {
 			let color = new Color(0, 0, 0, Math.round(trueIndex / resX) % 5 == 0 ? 0.4 : 0.1);
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? minY - offsetX : maxY + offsetX);
+			this.vertices.push((i % 2 == 0) ? minY : maxY);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -168,7 +168,7 @@ class Canvas {
 			this.indices.push(this.indices.length);
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? maxY + offsetX : minY - offsetX);
+			this.vertices.push((i % 2 == 0) ? maxY : minY);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -217,7 +217,7 @@ class Canvas {
 			let trueIndex = Math.abs(y);
 			let color = new Color(0, 0, 0, Math.round(trueIndex / resY) % 5 == 0 ? 0.4 : 0.1);
 
-			this.vertices.push((i % 2 == 0) ? minX - offsetY : maxX + offsetY);
+			this.vertices.push((i % 2 == 0) ? minX : maxX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -226,7 +226,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? maxX + offsetY : minX - offsetY);
+			this.vertices.push((i % 2 == 0) ? maxX : minX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
