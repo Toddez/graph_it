@@ -94,6 +94,46 @@ class Canvas {
 		this.gl.useProgram(this.shaderProgram);
 	}
 
+	renderXAxle(centerX, centerY, oneScaledX, color) {
+		this.vertices.push(-centerX - oneScaledX);
+		this.vertices.push(0);
+		this.vertices.push(color.r);
+		this.vertices.push(color.g);
+		this.vertices.push(color.b);
+		this.vertices.push(color.a);
+
+		this.indices.push(this.indices.length);
+
+		this.vertices.push(-centerX + oneScaledX);
+		this.vertices.push(0);
+		this.vertices.push(color.r);
+		this.vertices.push(color.g);
+		this.vertices.push(color.b);
+		this.vertices.push(color.a);
+
+		this.indices.push(this.indices.length);
+	}
+
+	renderYAxle(centerY, centerX, oneScaledY, color) {
+		this.vertices.push(0);
+		this.vertices.push(-centerY - oneScaledY);
+		this.vertices.push(color.r);
+		this.vertices.push(color.g);
+		this.vertices.push(color.b);
+		this.vertices.push(color.a);
+
+		this.indices.push(this.indices.length);
+
+		this.vertices.push(0);
+		this.vertices.push(-centerY + oneScaledY);
+		this.vertices.push(color.r);
+		this.vertices.push(color.g);
+		this.vertices.push(color.b);
+		this.vertices.push(color.a);
+
+		this.indices.push(this.indices.length);
+	}
+
 	renderLineX(minX, maxX, length, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
