@@ -92,9 +92,6 @@ class Graph {
 
 							if (diff / this.colors.length > 1)
 								found = true;
-
-							console.log(diff);
-
 						}
 					}
 			}
@@ -179,7 +176,7 @@ class Graph {
 
 		let min = Math.min((1 / canvas.scale.x) * 2, (1 / canvas.scale.x) * 2);
 
-		console.log((1 / canvas.scale.x) * 2);
+		// console.log((1 / canvas.scale.x) * 2);
 
 		//canvas.renderGridX(-centerX, -centerY - oneScaledY, -centerY + oneScaledY, min, oneScaledX);
 		//canvas.flush('LINE', true, vertex, fragment, this.time);
