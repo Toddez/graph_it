@@ -51,6 +51,15 @@ class Canvas {
 		// Grab WebGL context
 		this.gl = this.element.getContext('experimental-webgl');
 
+		this.pointTexture = this.gl.createTexture();
+		this.gl.bindTexture(this.gl.TEXTURE_2D, this.pointTexture);
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+
+		this.pointBuffer = this.gl.createFramebuffer();
+		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.pointBuffer);
+
+		this.gl.framebufferTexture2D(this.gl.FRAMEBUFFER, this.gl.COLOR_ATTACHMENT0, this.gl.TEXTURE_2D, this.pointTexture, 0);
+
 		// Create arrays for vertices and indices
 		this.vertices = [];
 		this.indices = [];
@@ -186,10 +195,10 @@ class Canvas {
 		if (!color)
 			color = '#f0f';
 
-		let textX = (pos.x / oneX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
-		let textY = -(pos.y / oneY + this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
+		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
+		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round(pos.x * 1000000) / 1000000 + ',' + Math.round(pos.y * 1000000) / 1000000 + ')', pos: new Vector2(textX, textY), color: color, align: 'left', base: 'bottom' });
+		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'left', base: 'bottom' });
 	}
 
 	renderGridX(centerX, minY, maxY, resX, offsetX) {
@@ -261,7 +270,7 @@ class Canvas {
 	 * Flush all buffers and render them
 	 * @author Toddez
 	 */
-	flush(type, dontClear, vertex, fragment, time) {
+	flush(type, dontClear, vertex, fragment, time, addPoints) {
 		try {
 			let drawMode;
 			switch (type) {
@@ -325,11 +334,29 @@ class Canvas {
 				this.gl.clear(this.gl.COLOR_BUFFER_BIT | this.gl.DEPTH_BUFFER_BIT);
 			}
 
-			// Set width and height of WebGL's viewport
-			this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+			if (type == 'POINT' && addPoints == true) {
+				this.gl.bindTexture(this.gl.TEXTURE_2D, this.pointTexture);
 
-			if (type != 'CLEAR') {
+				this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.pointBuffer);
+				this.gl.viewport(0, 0, 1, 1);
+
 				this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+
+				var data = new Uint8Array(4);
+				this.gl.readPixels(0, 0, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, data);
+
+				this.points.push(new Vector2((-1 + (data[0] / 255) * 2) * (1 / this.scale.x), (-1 + (data[1] / 255) * 2) * (1 / this.scale.y)));
+
+				this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
+				this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+				this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+			} else {
+				// Set width and height of WebGL's viewport
+				this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
+
+				if (type != 'CLEAR') {
+					this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
+				}
 			}
 		} catch { }
 
