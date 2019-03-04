@@ -367,6 +367,7 @@ class Canvas {
 				this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 				this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 			} else {
+				this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
 				// Set width and height of WebGL's viewport
 				this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
