@@ -198,7 +198,7 @@ class Canvas {
 		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: (textX < 0 ? 'left': 'right'), base: (textY < 0 ? 'top' : 'bottom'), stroke: '#000', strokeWeight: 2 });
+		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: (textX < 0 ? 'left' : 'right'), base: (textY < 0 ? 'top' : 'bottom'), stroke: '#000', strokeWeight: 2 });
 	}
 
 	renderGridX(centerX, centerY, scale, oneScaledY, lines) {
@@ -210,7 +210,7 @@ class Canvas {
 				color.r = color.g = color.b = 0.3;
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY : centerY + oneScaledY);
+			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY - 0.01 : centerY + oneScaledY + 0.01);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -219,7 +219,7 @@ class Canvas {
 			this.indices.push(this.indices.length);
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? centerY + oneScaledY : centerY - oneScaledY);
+			this.vertices.push((i % 2 == 0) ? centerY + oneScaledY + 0.01 : centerY - oneScaledY - 0.01);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -261,7 +261,7 @@ class Canvas {
 			if (Math.round(y / scale) % 5 == 0)
 				color.r = color.g = color.b = 0.3;
 
-			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX : centerX + oneScaledX);
+			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX - 0.01 : centerX + oneScaledX + 0.01);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -270,7 +270,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX : centerX - oneScaledX);
+			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX + 0.01 : centerX - oneScaledX - 0.01);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
