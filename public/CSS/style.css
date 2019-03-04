@@ -7,19 +7,20 @@ body {
 	padding: 0;
 	width: 100%;
 	height: 100%;
-	background-color: rgb(242, 242, 242);
 }
 
 * {
 	font-family: 'Courier New', Courier, monospace;
-	font: black;
+	color: white;
+	font-size: 12px;
+	background-color: rgba(25.5, 25.5, 28.05, 255);
 }
 
 canvas {
 	left: 200px;
 	top: 0;
 	position: absolute;
-	background-color: transparent;
+	background-color: transparent !important;
 }
 
 #webgl {
@@ -35,11 +36,29 @@ canvas {
 	top: 0;
 	position: absolute;
 	width: 200px;
-	height: 100%;
+	height: 70%;
 	box-sizing: border-box;
 	border: none;
 	margin: none;
 	padding: none;
 	resize: none;
-	background-color: #fbfbfb;
+}
+
+#info {
+	left: 0;
+	bottom: 0;
+	position: absolute;
+	width: 200px;
+	height: 30% !important;
+	overflow: scroll;
+	box-sizing: border-box;
+	border: none;
+	border-top: 1px solid rgba(50, 50, 50, 255);
+	margin: none;
+	padding: 10px;
+}
+
+#info ul {
+	padding-left: 20px;
+	margin: 10px;
 }
