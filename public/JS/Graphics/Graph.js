@@ -189,13 +189,39 @@ class Graph {
 
 		let min = Math.min((1 / canvas.scale.x) * 2, (1 / canvas.scale.x) * 2);
 
-		// console.log((1 / canvas.scale.x) * 2);
+		let scale = 1;
+		let step = 0;
+		let lines = 20;
+		if (min / lines >= 1)
+			while (scale * lines < min) {
+				if (step > 2)
+					step = 0;
+				switch (step) {
+					case 0: scale *= 2; break;
+					case 1: scale *= 2.5; break;
+					case 2: scale *= 2; break;
+				}
 
-		//canvas.renderGridX(-centerX, -centerY - oneScaledY, -centerY + oneScaledY, min, oneScaledX);
-		//canvas.flush('LINE', true, vertex, fragment, this.time);
+				step++;
+			}
+		else
+			while (scale * lines > min) {
+				if (step > 2)
+					step = 0;
+				switch (step) {
+					case 0: scale /= 2; break;
+					case 1: scale /= 2.5; break;
+					case 2: scale /= 2; break;
+				}
 
-		//canvas.renderGridY(-centerY, -centerX - oneScaledX, -centerX + oneScaledX, min, oneScaledY);
-		//canvas.flush('LINE', true, vertex, fragment, this.time);
+				step++;
+			}
+
+		canvas.renderGridX(-centerX, -centerY, scale, oneScaledY, lines);
+		canvas.flush('LINE', true, vertex, fragment, this.time);
+
+		canvas.renderGridY(-centerY, -centerX, scale, oneScaledX, lines);
+		canvas.flush('LINE', true, vertex, fragment, this.time);
 
 		//text.renderTextX(Math.round(-centerX), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
 		//text.renderTextY(Math.round(-centerY), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);

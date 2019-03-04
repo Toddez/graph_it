@@ -201,8 +201,33 @@ class Canvas {
 		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'left', base: 'bottom' });
 	}
 
-	renderGridX(centerX, minY, maxY, resX, offsetX) {
+	renderGridX(centerX, centerY, scale, oneScaledY, lines) {
+		let i = 0;
+		let trueCenterX = Math.round(centerX / scale) * scale;
+		for (let x = trueCenterX - scale * lines; x <= trueCenterX + scale * lines; x += scale) {
+			let color = new Color(0.15, 0.15, 0.15, 1);
+			if (Math.round(x / scale) % 5 == 0)
+				color.r = color.g = color.b = 0.3;
 
+			this.vertices.push(x);
+			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY : centerY + oneScaledY);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
+
+			this.indices.push(this.indices.length);
+
+			this.vertices.push(x);
+			this.vertices.push((i % 2 == 0) ? centerY + oneScaledY : centerY - oneScaledY);
+			this.vertices.push(color.r);
+			this.vertices.push(color.g);
+			this.vertices.push(color.b);
+			this.vertices.push(color.a);
+
+			this.indices.push(this.indices.length);
+			i++;
+		}
 	}
 
 	renderTextX(centerX, minY, maxY, resX, offsetX) {
@@ -237,15 +262,15 @@ class Canvas {
 		}
 	}
 
-	renderGridY(centerY, minX, maxX, resY, offsetY) {
+	renderGridY(centerY, centerX, scale, oneScaledX, lines) {
 		let i = 0;
-		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
-			let trueIndex = Math.abs(y);
+		let trueCenterY = Math.round(centerY / scale) * scale;
+		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
 			let color = new Color(0.15, 0.15, 0.15, 1);
-			if (Math.round(trueIndex / resY) % 5 == 0)
+			if (Math.round(y / scale) % 5 == 0)
 				color.r = color.g = color.b = 0.3;
 
-			this.vertices.push((i % 2 == 0) ? minX : maxX);
+			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX : centerX + oneScaledX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -254,7 +279,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? maxX : minX);
+			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX : centerX - oneScaledX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
