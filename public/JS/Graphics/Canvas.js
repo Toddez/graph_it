@@ -237,7 +237,7 @@ class Canvas {
 			let textX = ((x + this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
 			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff', align: 'center', base: 'middle'});
+			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
 		}
 	}
 
@@ -246,9 +246,10 @@ class Canvas {
 		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
 
 			let textX = ((this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
-			let textY = ((y -this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
+			let textY = ((y - this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-			this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff', align: 'center', base: 'middle'});
+			if (y != 0)
+				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
 		}
 	}
 
@@ -409,10 +410,16 @@ class Canvas {
 				this.context2d.textBaseline = 'top';
 
 			if (text.stroke) {
+				if (text.strokeWeight)
+					this.context2d.lineWidth = text.strokeWeight;
+				else
+					this.context2d.lineWidth = 1;
+
 				this.context2d.strokeStyle = text.stroke;
 				this.context2d.strokeText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
 			} else {
 				this.context2d.strokeStyle = '#fff';
+				this.context2d.lineWidth = 1;
 			}
 
 			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
