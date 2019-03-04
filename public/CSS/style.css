@@ -11,6 +11,7 @@ body {
 	color: white;
 	font-size: 12px;
 	background-color: rgba(25.5, 25.5, 28.05, 255);
+	outline: none;
 }
 
 ::-webkit-scrollbar {
