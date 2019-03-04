@@ -1,12 +1,9 @@
-::-webkit-scrollbar {
-	display: none;
-}
-
 body {
 	margin: 0;
 	padding: 0;
 	width: 100%;
 	height: 100%;
+	overflow: hidden;
 }
 
 * {
@@ -14,6 +11,15 @@ body {
 	color: white;
 	font-size: 12px;
 	background-color: rgba(25.5, 25.5, 28.05, 255);
+}
+
+::-webkit-scrollbar {
+	background-color: rgba(35, 35, 36, 255);
+	width: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+	background-color: rgba(55, 55, 57, 255);
 }
 
 canvas {
@@ -51,6 +57,7 @@ canvas {
 	width: 200px;
 	height: 30% !important;
 	overflow: scroll;
+	overflow-x: hidden;
 	box-sizing: border-box;
 	border: none;
 	border-top: 1px solid rgba(50, 50, 50, 255);
