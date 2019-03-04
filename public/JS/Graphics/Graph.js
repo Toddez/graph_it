@@ -223,8 +223,8 @@ class Graph {
 		canvas.renderGridY(-centerY, -centerX, scale, oneScaledX, lines);
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
-		//text.renderTextX(Math.round(-centerX), -centerY - oneScaledY, -centerY + oneScaledY, size, oneScaledX);
-		//text.renderTextY(Math.round(-centerY), -centerX - oneScaledX, -centerX + oneScaledX, size, oneScaledY);
+		text.renderTextX(-centerX, -centerY, scale, lines);
+		text.renderTextY(-centerY, -centerX, scale, lines);
 
 		text.flush2d(true);
 	}

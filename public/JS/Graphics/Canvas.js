@@ -230,35 +230,25 @@ class Canvas {
 		}
 	}
 
-	renderTextX(centerX, minY, maxY, resX, offsetX) {
-		let i = 0;
-		for (let x = centerX; x <= centerX + offsetX * 2 && x >= centerX - offsetX * 2; x += resX * i * (i % 2 == 0 ? 1 : -1)) {
-			let trueIndex = Math.abs(x);
+	renderTextX(centerX, centerY, scale, lines) {
+		let trueCenterX = Math.round(centerX / scale) * scale;
+		for (let x = trueCenterX - scale * lines; x <= trueCenterX + scale * lines; x += scale) {
 
-			if (Math.round(trueIndex / resX) % 5 == 0 && x != 0) {
-				let textX = (x / offsetX + this.position.x * this.scale.x) * (this.dimensions.x - this.margin.x) / 2;
-				let textY = -this.position.y * this.scale.y * (this.dimensions.y - this.margin.y) / 2;
+			let textX = ((x + this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
+			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-				this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff' });
-			}
-
-			i++;
+			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff', align: 'center', base: 'middle'});
 		}
 	}
 
-	renderTextY(centerY, minX, maxX, resY, offsetY) {
-		let i = 0;
-		for (let y = centerY; y <= centerY + offsetY * 2 && y >= centerY - offsetY * 2; y += resY * i * (i % 2 == 0 ? 1 : -1)) {
-			let trueIndex = Math.abs(y);
+	renderTextY(centerY, centerX, scale, lines) {
+		let trueCenterY = Math.round(centerY / scale) * scale;
+		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
 
-			if (Math.round(trueIndex / resY) % 5 == 0 && y != 0) {
-				let textX = this.position.x * this.scale.x * (this.dimensions.x - this.margin.x) / 2;
-				let textY = (-y / offsetY - this.position.y * this.scale.y) * (this.dimensions.y - this.margin.y) / 2;
+			let textX = ((this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
+			let textY = ((y -this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-				this.text.push({ text: Math.round(y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff' });
-			}
-
-			i++;
+			this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#fff', align: 'center', base: 'middle'});
 		}
 	}
 
