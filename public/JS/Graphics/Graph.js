@@ -192,15 +192,23 @@ class Graph {
 		let scale = 1;
 		let step = 0;
 		let lines = 20;
+		let stop = false;
 		if (min / lines >= 1)
-			while (scale * lines < min) {
+			while (scale * lines < min && stop == false) {
 				if (step > 2)
 					step = 0;
+
+				let change = 1;
 				switch (step) {
-					case 0: scale *= 2; break;
-					case 1: scale *= 2.5; break;
-					case 2: scale *= 2; break;
+					case 0: change = 2; break;
+					case 1: change = 2.5; break;
+					case 2: change = 2; break;
 				}
+
+				if (min / (scale * change) >= lines)
+					scale *= change;
+				else
+					stop = true;
 
 				step++;
 			}
@@ -208,6 +216,7 @@ class Graph {
 			while (scale * lines > min) {
 				if (step > 2)
 					step = 0;
+
 				switch (step) {
 					case 0: scale /= 2; break;
 					case 1: scale /= 2.5; break;
@@ -224,7 +233,7 @@ class Graph {
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
 		text.renderTextX(-centerX, -centerY, scale, lines);
-		text.renderTextY(-centerY, -centerX, scale, lines);
+		text.renderTextY(centerY, -centerX, scale, lines);
 
 		text.flush2d(true);
 	}

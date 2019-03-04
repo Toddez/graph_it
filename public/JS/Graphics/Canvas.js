@@ -198,7 +198,7 @@ class Canvas {
 		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'left', base: 'bottom' });
+		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: (textX < 0 ? 'left': 'right'), base: (textY < 0 ? 'top' : 'bottom'), stroke: '#000', strokeWeight: 2 });
 	}
 
 	renderGridX(centerX, centerY, scale, oneScaledY, lines) {
@@ -389,7 +389,7 @@ class Canvas {
 		if (!dontClear || dontClear == false)
 			this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
-		this.context2d.font = '14px Courier New';
+		this.context2d.font = '15px Courier New';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
