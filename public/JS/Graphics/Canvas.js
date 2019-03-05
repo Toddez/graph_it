@@ -210,7 +210,7 @@ class Canvas {
 				color.r = color.g = color.b = 0.3;
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY - 0.01 : centerY + oneScaledY + 0.01);
+			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY : centerY + oneScaledY);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -219,7 +219,7 @@ class Canvas {
 			this.indices.push(this.indices.length);
 
 			this.vertices.push(x);
-			this.vertices.push((i % 2 == 0) ? centerY + oneScaledY + 0.01 : centerY - oneScaledY - 0.01);
+			this.vertices.push((i % 2 == 0) ? centerY + oneScaledY : centerY - oneScaledY);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
 			this.vertices.push(color.b);
@@ -261,7 +261,7 @@ class Canvas {
 			if (Math.round(y / scale) % 5 == 0)
 				color.r = color.g = color.b = 0.3;
 
-			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX - 0.01 : centerX + oneScaledX + 0.01);
+			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX : centerX + oneScaledX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -270,7 +270,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX + 0.01 : centerX - oneScaledX - 0.01);
+			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX : centerX - oneScaledX);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -336,6 +336,9 @@ class Canvas {
 				// Set matrix uniform
 				let matrixLocation = this.gl.getUniformLocation(this.shaderProgram, "uMatrix");
 				this.gl.uniformMatrix3fv(matrixLocation, false, matrix);
+
+				let resLocation = this.gl.getUniformLocation(this.shaderProgram, "uRes");
+				this.gl.uniform2fv(resLocation, [this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y]);
 			}
 
 			// Clear to background color
