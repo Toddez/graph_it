@@ -42,7 +42,7 @@ class Graph {
 		this.colors = new Array();
 		this.functions = new Array();
 
-		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying lowp vec4 vColor; varying lowp vec2 vRes; void main(void) { float x = aPos.x; float y = aPos.y; x = float(X); y = float(Y); float z = 0.0; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; vec4 color = aColor; if (abs(position.x) > 1.0 || abs(position.y) > 1.0) { color = vec4(0.0, 0.0, 0.0, 0.0); z = 1.0; } gl_Position = vec4(position.xy, z, 1.0); vColor = color; vRes = uRes; }';
+		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying lowp vec4 vColor; varying lowp vec2 vRes; void main(void) { float x = aPos.x; float y = aPos.y; x = float(X); y = float(Y); float z = 0.0; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; vec4 color = aColor; if (abs(position.x) > 1.01 || abs(position.y) > 1.01) { color = vec4(0.0, 0.0, 0.0, 0.0); z = 1.0; } gl_Position = vec4(position.xy, z, 1.0); vColor = color; vRes = uRes; }';
 
 		this.pointShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying lowp vec4 vColor; varying lowp vec2 vRes; varying lowp vec2 vPos; void main(void) { vec2 pos = vec2POS; vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy; gl_Position = vec4(position.xy, 0.0, 1.0); vPos = position; vColor = aColor; gl_PointSize = 10.0; vRes = uRes; }';
 
