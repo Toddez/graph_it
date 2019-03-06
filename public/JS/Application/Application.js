@@ -19,8 +19,8 @@ class Application {
 
 	update() {
 		let self = this;
-		setTimeout(function () { self.update(); }, 5);
-		
+		setTimeout(function () { self.update(); }, 10);
+
 		if (this.onUpdate)
 			this.onUpdate();
 	}
