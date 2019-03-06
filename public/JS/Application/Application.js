@@ -18,11 +18,11 @@ class Application {
 	}
 
 	update() {
+		let self = this;
+		setTimeout(function () { self.update(); }, 5);
+		
 		if (this.onUpdate)
 			this.onUpdate();
-
-		let self = this;
-		setTimeout(function () { self.update(); }, parseInt(1000 / this.ups));
 	}
 
 	// TODO: Implement actual tick/update/render
