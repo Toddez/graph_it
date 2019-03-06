@@ -49,11 +49,13 @@ class Canvas {
 	 */
 	setupWebGL() {
 		// Grab WebGL context
-		this.gl = this.element.getContext('experimental-webgl');
+		this.gl = this.element.getContext('webgl2');
+
+		let ext = this.gl.getExtension('EXT_color_buffer_float');
 
 		this.pointTexture = this.gl.createTexture();
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.pointTexture);
-		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA, 1, 1, 0, this.gl.RGBA, this.gl.UNSIGNED_BYTE, new Uint8Array([0, 0, 0, 0]));
+		this.gl.texImage2D(this.gl.TEXTURE_2D, 0, this.gl.RGBA32F, 1, 1, 0, this.gl.RGBA, this.gl.FLOAT, null);
 
 		this.pointBuffer = this.gl.createFramebuffer();
 		this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, this.pointBuffer);
@@ -198,7 +200,7 @@ class Canvas {
 		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ',' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: (textX < 0 ? 'left' : 'right'), base: (textY < 0 ? 'top' : 'bottom'), stroke: '#000', strokeWeight: 2 });
+		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ', ' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'center', base: 'middle', stroke: '#000', strokeWeight: 2 });
 	}
 
 	renderGridX(centerX, centerY, scale, oneScaledY, lines) {
@@ -361,10 +363,10 @@ class Canvas {
 
 				this.gl.drawElements(drawMode, this.indices.length, this.gl.UNSIGNED_SHORT, 0);
 
-				var data = new Uint8Array(4);
-				this.gl.readPixels(0, 0, 1, 1, this.gl.RGBA, this.gl.UNSIGNED_BYTE, data);
+				var data = new Float32Array(4);
+				this.gl.readPixels(0, 0, 1, 1, this.gl.RGBA, this.gl.FLOAT, data);
 
-				this.points.push(new Vector2((-1 + (data[0] / 255) * 2) * (1 / this.scale.x), (-1 + (data[1] / 255) * 2) * (1 / this.scale.y)));
+				this.points.push(new Vector2((-1 + (data[0]) * 2) * (1 / this.scale.x), (-1 + (data[1]) * 2) * (1 / this.scale.y)));
 
 				this.gl.bindFramebuffer(this.gl.FRAMEBUFFER, null);
 				this.gl.viewport(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
