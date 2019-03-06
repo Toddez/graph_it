@@ -48,7 +48,7 @@ class Graph {
 
 		this.pointCalcShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; varying lowp vec4 vColor; varying lowp vec2 vPos; void main(void) { vec2 pos = vec2POS; vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy; gl_Position = vec4(0.0, 0.0, 1.0, 1.0); vPos = position; vColor = aColor; gl_PointSize = 0.0; }';
 
-		this.fragmentShader = 'varying lowp vec4 vColor; varying lowp vec2 vRes; void main(void) { gl_FragColor = vColor; if(gl_FragCoord.x <= 1.0 || vRes.x - gl_FragCoord.x <= 1.0 || gl_FragCoord.y <= 1.0 || vRes.y - gl_FragCoord.y <= 1.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }}';
+		this.fragmentShader = 'varying lowp vec4 vColor; varying lowp vec2 vRes; void main(void) { gl_FragColor = vColor; if(gl_FragCoord.x < 1.0 || vRes.x - gl_FragCoord.x < 1.0 || gl_FragCoord.y < 1.0 || vRes.y - gl_FragCoord.y < 1.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }}';
 
 		this.pointFragmentShader = 'varying lowp vec4 vColor; varying lowp vec2 vPos; void main(void) { gl_FragColor = vec4(vPos.x / 2.0 + 0.5, vPos.y / 2.0 + 0.5, 0.0, 0.0); }';
 	}
