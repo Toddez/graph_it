@@ -395,7 +395,7 @@ class Canvas {
 		if (!dontClear || dontClear == false)
 			this.context2d.clearRect(0, 0, this.dimensions.x - this.margin.x, this.dimensions.y - this.margin.y);
 
-		this.context2d.font = '15px Courier New';
+		this.context2d.font = '12px Courier New';
 
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
