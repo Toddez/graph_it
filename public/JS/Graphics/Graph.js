@@ -125,7 +125,7 @@ class Graph {
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
+						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == 'y') {
@@ -136,7 +136,7 @@ class Graph {
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
-						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 5 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
+						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == '(') {
