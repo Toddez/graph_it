@@ -69,10 +69,10 @@ x= 3.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * y - sin(time*0.3)*2.0 * sin(tim
 
 			app.onStart = function () {
 				canvas.setBackground(new Color(0.1, 0.1, 0.11, 1));
-				canvas.setMargin(new Vector2(200, 0));
+				canvas.setMargin(new Vector2(400, 0));
 				canvas.fullscreen(true);
 
-				text.setMargin(new Vector2(200, 0));
+				text.setMargin(new Vector2(400, 0));
 				text.fullscreen(true);
 
 				let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));

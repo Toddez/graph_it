@@ -24,7 +24,7 @@ body {
 }
 
 canvas {
-	left: 200px;
+	left: 400px;
 	top: 0;
 	position: absolute;
 	background-color: transparent !important;
@@ -42,7 +42,7 @@ canvas {
 	left: 0;
 	top: 0;
 	position: absolute;
-	width: 200px;
+	width: 400px;
 	height: 70%;
 	box-sizing: border-box;
 	border: none;
@@ -55,7 +55,7 @@ canvas {
 	left: 0;
 	bottom: 0;
 	position: absolute;
-	width: 200px;
+	width: 400px;
 	height: 30% !important;
 	overflow: scroll;
 	overflow-x: hidden;
