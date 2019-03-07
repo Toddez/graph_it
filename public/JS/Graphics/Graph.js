@@ -123,7 +123,7 @@ class Graph {
 						let y = 'aPos.y';
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -134,7 +134,7 @@ class Graph {
 						let y = functions[i].y;
 
 						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -144,13 +144,13 @@ class Graph {
 						let pos = functions[i].pos;
 
 						let vertex = this.pointCalcShader.replace(/(POS)/gm, pos);
-						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, this.pointFragmentShader, this.time, true);
 
 						vertex = this.pointShader.replace(/(POS)/gm, pos);
-						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, this.fragmentShader, this.time);
