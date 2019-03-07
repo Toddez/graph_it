@@ -15,29 +15,29 @@
 </head>
 
 <body>
-	<textarea id="functions">
-y= x * x
+	<textarea id="functions">y = PI
+y = e</textarea>
 
-(sin(time*0.3)*2.0, sin(time*0.3)*2.0 * sin(time*0.3)*2.0)
-			
-y= 2.0 * sin(time*0.3)*2.0 * x - sin(time*0.3)*2.0 * sin(time*0.3)*2.0
-			
-			
-x= y * y * y
-			
-(sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0, sin(time*0.3)*2.0)
-			
-x= 3.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * y - sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * 2.0</textarea>
-	<div id="info">Examples:
+	<textarea id="variables">float PI = 3.14159265359
+float e = 2.71828</textarea>
+
+	<div id="info">Examples of functions:
 		<ul>
-			<li>y=1.0</li>
-			<li>x=1.0</li>
+			<li>y = 1.0</li>
+			<li>x = 1.0</li>
 			<li>(1.0, 1.0)</li>
 		</ul>
-		Input functions in the area above using the following format for lines: y=..., x=... and the following for
-		points: (..., ...)<br><br>Numbers are not allowed to be inputted as integers(1, 2, 3, ...), instead they have to
-		be inputted as floats(1.0, 2.0, 3.0, ...)<br><br>You have access to functions like: sin, cos, tan, etc as well
-		as types like vec2, vec3, vec4, mat3, mat4, etc<br><br>You also have access to time, which starts at 0 when page
+		Examples of constants:
+		<ul>
+			<li>float PI = 3.14159265359</li>
+			<li>float halfPI = PI / 2.0</li>
+			<li>float e = 2.71828</li>
+		</ul>
+		Input functions in the area above using the following format for lines: y=value, x=value and the following for
+		points: (value, value)<br><br>Numbers are not allowed to be inputted as integers(1, 2, 3, ...), instead they
+		have to be inputted as floats(1.0, 2.0, 3.0, ...)<br><br>You have access to functions like: sin, cos, tan, etc as well
+		as types like int, float, vec2, vec3, vec4, mat3, mat4, etc<br><br>You can also create your own constants above
+		using the following format: type name = value, the constants will be defined in the order they are written<br><br>You also have access to t, which starts at 0 when page
 		is loaded and goes up over time<br><br>You can move around the graph using left click and zoom in/out using the
 		mousewheel
 	</div>
@@ -62,9 +62,12 @@ x= 3.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * y - sin(time*0.3)*2.0 * sin(tim
 				return c + ((v - a) / (b - a)) * d;
 			}
 
-			function checkFunctions() {
+			function checkInput() {
 				var functionStrings = $('#functions').val().split('\n');
 				graph.setFunctions(functionStrings);
+
+				var variableStrings = $('#variables').val().split('\n');
+				graph.setVariables(variableStrings);
 			}
 
 			app.onStart = function () {
@@ -81,16 +84,16 @@ x= 3.0 * sin(time*0.3)*2.0 * sin(time*0.3)*2.0 * y - sin(time*0.3)*2.0 * sin(tim
 
 				canvas.scale = new Vector2(xScale, yScale);
 
-				$('#functions').on('input', function () {
+				$('#functions, #variables').on('input', function () {
 					inputChanged = true;
 					lastInput = time;
 				});
-				$('#functions').ready(checkFunctions);
+				$('#functions, #variables').ready(checkInput);
 			};
 
 			app.onUpdate = function () {
 				if (inputChanged == true && time - lastInput >= 0.15) {
-					checkFunctions();
+					checkInput();
 					inputChanged = false;
 				}
 

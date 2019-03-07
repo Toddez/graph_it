@@ -43,9 +43,27 @@ canvas {
 	top: 0;
 	position: absolute;
 	width: 400px;
-	height: 70%;
+	height: 50%;
+	overflow: scroll;
+	overflow-x: hidden;
 	box-sizing: border-box;
 	border: none;
+	margin: none;
+	padding: none;
+	resize: none;
+}
+
+#variables {
+	left: 0;
+	top: 50%;
+	position: absolute;
+	width: 400px;
+	height: 20%;
+	overflow: scroll;
+	overflow-x: hidden;
+	box-sizing: border-box;
+	border: none;
+	border-top: 1px solid rgba(50, 50, 50, 255);
 	margin: none;
 	padding: none;
 	resize: none;

@@ -41,6 +41,7 @@ class Graph {
 
 		this.colors = new Array();
 		this.functions = new Array();
+		this.variables = '';
 
 		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying lowp vec4 vColor; varying lowp vec2 vRes; void main(void) { float x = aPos.x; float y = aPos.y; x = float(X); y = float(Y); float z = 0.0; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; vec4 color = aColor; if (abs(position.x) > 1.01 || abs(position.y) > 1.01) { color = vec4(0.0, 0.0, 0.0, 0.0); z = 1.0; } gl_Position = vec4(position.xy, z, 1.0); vColor = color; vRes = uRes; }';
 
@@ -63,7 +64,8 @@ class Graph {
 
 		for (let i = 0; i < functions.length; i++) {
 			if (functions[i].length > 0) {
-				let string = functions[i].trim();
+				let string = functions[i].trim().replace(/ /gm, '');
+
 				let type = string[0];
 				if (type == 'x')
 					this.functions.push({ type: type, x: string.substring(2, string.length) })
@@ -108,6 +110,19 @@ class Graph {
 	}
 
 	/**
+	 * Set variables
+	 * @author Toddez
+	 * @param {Array.<String>} variables 
+	 */
+	setVariables(variables) {
+		this.variables = '';
+
+		for (let i = 0; i < variables.length; i++) {
+			this.variables = this.variables + 'const ' + variables[i] + ';';
+		}
+	}
+
+	/**
 	 * Renders all functions
 	 * @author Toddez
 	 */
@@ -135,7 +150,8 @@ class Graph {
 						let x = functions[i].x;
 						let y = 'aPos.y';
 
-						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
+						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
 						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -145,7 +161,8 @@ class Graph {
 						let x = 'aPos.x';
 						let y = functions[i].y;
 
-						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y).replace(/(time)/gm, this.time);
+						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
 						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 5 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -154,12 +171,14 @@ class Graph {
 					try {
 						let pos = functions[i].pos;
 
-						let vertex = this.pointCalcShader.replace(/(POS)/gm, pos).replace(/(time)/gm, this.time);
+						let vertex = this.pointCalcShader.replace(/(POS)/gm, pos);
+						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, this.pointFragmentShader, this.time, true);
 
-						vertex = this.pointShader.replace(/(POS)/gm, pos).replace(/(time)/gm, this.time);
+						vertex = this.pointShader.replace(/(POS)/gm, pos);
+						vertex = this.variables + 'const float t=' + this.time + ';' + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, this.fragmentShader, this.time);
