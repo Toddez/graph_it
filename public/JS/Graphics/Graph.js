@@ -118,7 +118,8 @@ class Graph {
 		this.variables = '';
 
 		for (let i = 0; i < variables.length; i++) {
-			this.variables = this.variables + 'const ' + variables[i] + ';';
+			if (variables[i] != '')
+				this.variables = this.variables + 'const ' + variables[i] + ';';
 		}
 	}
 
