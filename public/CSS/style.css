@@ -49,7 +49,7 @@ canvas {
 	box-sizing: border-box;
 	border: none;
 	margin: none;
-	padding: none;
+	padding: 10px;
 	resize: none;
 }
 
@@ -65,7 +65,7 @@ canvas {
 	border: none;
 	border-top: 1px solid rgba(50, 50, 50, 255);
 	margin: none;
-	padding: none;
+	padding: 10px;
 	resize: none;
 }
 
