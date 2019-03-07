@@ -191,7 +191,7 @@ class Graph {
 
 		let scale = 1;
 		let step = 0;
-		let lines = 20;
+		let lines = 15;
 		let stop = false;
 		if (min / lines >= 1)
 			while (scale * lines < min && stop == false) {
@@ -226,14 +226,14 @@ class Graph {
 				step++;
 			}
 
-		canvas.renderGridX(-centerX, -centerY, scale, oneScaledY, lines);
+		canvas.renderGridX(-centerX, -centerY, scale, oneScaledY, Math.ceil(oneScaledX / scale));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
-		canvas.renderGridY(-centerY, -centerX, scale, oneScaledX, lines);
+		canvas.renderGridY(-centerY, -centerX, scale, oneScaledX, Math.ceil(oneScaledY / scale));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
-		text.renderTextX(-centerX, -centerY, scale, lines);
-		text.renderTextY(centerY, -centerX, scale, lines);
+		text.renderTextX(-centerX, -centerY, scale, Math.ceil(oneScaledX / scale));
+		text.renderTextY(centerY, -centerX, scale, Math.ceil(oneScaledY / scale));
 
 		text.flush2d(true);
 	}
