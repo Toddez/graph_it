@@ -1,5 +1,11 @@
 class Matrix3 {
 
+	/**
+	 * Multiply two 3x3 matrices
+	 * @param {Array.<Float>} a 
+	 * @param {Array.<Float>} b 
+	 * @returns {Array.<Float>} matrix
+	 */
 	static multiply(a, b) {
 		var a00 = a[0 * 3 + 0];
 		var a01 = a[0 * 3 + 1];
@@ -33,6 +39,13 @@ class Matrix3 {
 		];
 	}
 
+	/**
+	 * Creates a translation matrix
+	 * @author Toddez
+	 * @param {Number} tx 
+	 * @param {Number} ty 
+	 * @returns {Array.<Float>} matrix
+	 */
 	static translation(tx, ty) {
 		return [
 			1, 0, 0,
@@ -41,6 +54,12 @@ class Matrix3 {
 		];
 	}
 
+	/**
+	 * Creates a rotation matrix
+	 * @author Toddez
+	 * @param {Number} angleInRadians 
+	 * @returns {Array.<Float>} matrix
+	 */
 	static rotation(angleInRadians) {
 		var c = Math.cos(angleInRadians);
 		var s = Math.sin(angleInRadians);
@@ -51,6 +70,13 @@ class Matrix3 {
 		];
 	}
 
+	/**
+	 * Creates a scaling matrix
+	 * @author Toddez
+	 * @param {Number} sx 
+	 * @param {Number} sy 
+	 * @returns {Array.<Float>} matrix
+	 */
 	static scaling(sx, sy) {
 		return [
 			sx, 0, 0,

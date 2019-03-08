@@ -1,6 +1,8 @@
+// TODO: Implement actual tick/update/render
 class Application {
     /**
      * Creates a application
+	 * @author Toddez
      * @param {Number} ups desired ups
      * @param {Number} fps desired fps
      */
@@ -10,6 +12,10 @@ class Application {
 		this.fps = fps;
 	}
 
+	/**
+	 * Run application
+	 * @author Toddez
+	 */
 	start() {
 		if (this.onStart)
 			this.onStart();
@@ -17,6 +23,10 @@ class Application {
 		this.update();
 	}
 
+	/**
+	 * Update application
+	 * @author Toddez
+	 */
 	update() {
 		let self = this;
 		setTimeout(function () { self.update(); }, 10);
@@ -24,6 +34,4 @@ class Application {
 		if (this.onUpdate)
 			this.onUpdate();
 	}
-
-	// TODO: Implement actual tick/update/render
 }

@@ -162,10 +162,10 @@ class Graph {
 
 		let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-		canvas.renderXAxle(centerX, centerY, oneScaledX, new Color(0.6, 0.6, 0.6, 1));
+		canvas.renderXAxis(centerX, centerY, oneScaledX, new Color(0.6, 0.6, 0.6, 1));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
-		canvas.renderYAxle(centerY, centerX, oneScaledY, new Color(0.6, 0.6, 0.6, 1));
+		canvas.renderYAxis(centerY, centerX, oneScaledY, new Color(0.6, 0.6, 0.6, 1));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
 
 		let min = Math.max((1 / canvas.scale.x) * 2, (1 / canvas.scale.x) * 2);
@@ -220,7 +220,9 @@ class Graph {
 	}
 }
 
-lineShader = `
+// Define all neccessary shaders
+
+const lineShader = `
 	attribute vec2 aPos;
 	attribute vec4 aColor;
 
@@ -251,7 +253,7 @@ lineShader = `
 	}
 `;
 
-pointShader = `
+const pointShader = `
 	attribute vec2 aPos;
 	attribute vec4 aColor;
 
@@ -275,7 +277,7 @@ pointShader = `
 	}
 `;
 
-pointCalcShader = `
+const pointCalcShader = `
 	attribute vec2 aPos;
 	attribute vec4 aColor;
 
@@ -296,7 +298,7 @@ pointCalcShader = `
 	}
 `;
 
-fragmentShader = `
+const fragmentShader = `
 	varying mediump vec4 vColor; 
 	varying mediump vec2 vRes; 
 
@@ -311,7 +313,7 @@ fragmentShader = `
 	}
 `;
 
-pointFragmentShader = `
+const pointFragmentShader = `
 	varying mediump vec4 vColor;
 	varying mediump vec2 vPos;
 

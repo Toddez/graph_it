@@ -5,6 +5,8 @@ class Canvas {
 	 * @author Toddez
      * @param {String} id 
      * @param {Vector2} dimensions 
+	 * @param {String} parent
+	 * @param {Boolean} gl true - WebGL, false - 2D
      */
 	constructor(id, dimensions, parent, gl) {
 		Canvas.canvases.push(this);
@@ -80,7 +82,7 @@ class Canvas {
 	}
 
 	/**
-	 * Creates shader program for canvas
+	 * Creates and sets shader program for canvas
 	 * @author Toddez
 	 * @param {String} vertex
 	 * @param {String} fragment 
@@ -105,7 +107,15 @@ class Canvas {
 		this.gl.useProgram(this.shaderProgram);
 	}
 
-	renderXAxle(centerX, centerY, oneScaledX, color) {
+	/**
+	 * Push vertices and indicies for the x-axis
+	 * @author Toddez
+	 * @param {Number} centerX 
+	 * @param {Number} centerY 
+	 * @param {Number} oneScaledX 
+	 * @param {Color} color 
+	 */
+	renderXAxis(centerX, centerY, oneScaledX, color) {
 		this.vertices.push(-centerX - oneScaledX);
 		this.vertices.push(0);
 		this.vertices.push(color.r);
@@ -125,7 +135,15 @@ class Canvas {
 		this.indices.push(this.indices.length);
 	}
 
-	renderYAxle(centerY, centerX, oneScaledY, color) {
+	/**
+	 * Push vertices and indicies for the y-axis
+	 * @author Toddez
+	 * @param {Number} centerY 
+	 * @param {Number} centerX 
+	 * @param {Number} oneScaledY 
+	 * @param {Color} color 
+	 */
+	renderYAxis(centerY, centerX, oneScaledY, color) {
 		this.vertices.push(0);
 		this.vertices.push(-centerY - oneScaledY);
 		this.vertices.push(color.r);
@@ -145,6 +163,14 @@ class Canvas {
 		this.indices.push(this.indices.length);
 	}
 
+	/**
+	 * Push vertices and indicies for a line with fixed x
+	 * @author Toddez
+	 * @param {Number} minX 
+	 * @param {Number} maxX 
+	 * @param {Number} length 
+	 * @param {Color} color 
+	 */
 	renderLineX(minX, maxX, length, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
@@ -162,6 +188,14 @@ class Canvas {
 		}
 	}
 
+	/**
+	 * Push vertices and indicies for a line with fixed y
+	 * @author Toddez
+	 * @param {Number} minY 
+	 * @param {Number} maxY 
+	 * @param {Number} length 
+	 * @param {Color} color 
+	 */
 	renderLineY(minY, maxY, length, color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
@@ -179,6 +213,11 @@ class Canvas {
 		}
 	}
 
+	/**
+	 * Push vertex and index for a point
+	 * @author Toddez
+	 * @param {Color} color 
+	 */
 	renderPoint(color) {
 		if (!color)
 			color = new Color(1, 0, 1, 1);
@@ -193,6 +232,14 @@ class Canvas {
 		this.indices.push(this.indices.length);
 	}
 
+	/**
+	 * Push a text object for a point
+	 * @author Toddez
+	 * @param {Number} oneX 
+	 * @param {Number} oneY 
+	 * @param {Vector2} pos 
+	 * @param {Color} color 
+	 */
 	renderPointText(oneX, oneY, pos, color) {
 		if (!color)
 			color = '#f0f';
@@ -203,6 +250,15 @@ class Canvas {
 		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ', ' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'center', base: 'middle', stroke: '#000', strokeWeight: 2 });
 	}
 
+	/**
+	 * Push vertices and indicies for grid lines in x axis
+	 * @author Toddez
+	 * @param {Number} centerX 
+	 * @param {Number} centerY 
+	 * @param {Number} scale 
+	 * @param {Number} oneScaledY 
+	 * @param {Number} lines 
+	 */
 	renderGridX(centerX, centerY, scale, oneScaledY, lines) {
 		let i = 0;
 		let trueCenterX = Math.round(centerX / scale) * scale;
@@ -232,29 +288,15 @@ class Canvas {
 		}
 	}
 
-	renderTextX(centerX, centerY, scale, lines) {
-		let trueCenterX = Math.round(centerX / scale) * scale;
-		for (let x = trueCenterX - scale * lines; x <= trueCenterX + scale * lines; x += scale) {
-
-			let textX = ((x + this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
-			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
-
-			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
-		}
-	}
-
-	renderTextY(centerY, centerX, scale, lines) {
-		let trueCenterY = Math.round(centerY / scale) * scale;
-		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
-
-			let textX = ((this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
-			let textY = ((y - this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
-
-			if (y != 0)
-				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
-		}
-	}
-
+	/**
+	 * Push vertices and indicies for grid lines in y axis
+	 * @author Toddez
+	 * @param {Number} centerY 
+	 * @param {Number} centerX 
+	 * @param {Number} scale 
+	 * @param {Number} oneScaledX 
+	 * @param {Number} lines 
+	 */
 	renderGridY(centerY, centerX, scale, oneScaledX, lines) {
 		let i = 0;
 		let trueCenterY = Math.round(centerY / scale) * scale;
@@ -285,8 +327,53 @@ class Canvas {
 	}
 
 	/**
+	 * Pushes text objects for each line in grid in x axis
+	 * @author Toddez
+	 * @param {Number} centerX
+	 * @param {Number} centerY 
+	 * @param {Number} scale 
+	 * @param {Number} lines 
+	 */
+	renderTextX(centerX, centerY, scale, lines) {
+		let trueCenterX = Math.round(centerX / scale) * scale;
+		for (let x = trueCenterX - scale * lines; x <= trueCenterX + scale * lines; x += scale) {
+
+			let textX = ((x + this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
+			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
+
+			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
+		}
+	}
+
+	/**
+	 * Pushes text objects for each line in grid in y axis
+	 * @author Toddez
+	 * @param {Number} centerY 
+	 * @param {Number} centerX 
+	 * @param {Number} scale 
+	 * @param {Number} lines 
+	 */
+	renderTextY(centerY, centerX, scale, lines) {
+		let trueCenterY = Math.round(centerY / scale) * scale;
+		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
+
+			let textX = ((this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
+			let textY = ((y - this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
+
+			if (y != 0)
+				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
+		}
+	}
+
+	/**
 	 * Flush all buffers and render them
 	 * @author Toddez
+	 * @param {String} type LINE | POINT | CLEAR
+	 * @param {Boolean} dontClear 
+	 * @param {String} vertex 
+	 * @param {String} fragment 
+	 * @param {Number} time 
+	 * @param {Boolean} addPoints 
 	 */
 	flush(type, dontClear, vertex, fragment, time, addPoints) {
 		try {
@@ -390,6 +477,7 @@ class Canvas {
 	/**
 	 * Clear 2d
 	 * @author Toddez
+	 * @param {Boolean} dontClear
 	 */
 	flush2d(dontClear) {
 		if (!dontClear || dontClear == false)
@@ -577,10 +665,23 @@ class Canvas {
 		});
 	}
 
+	/**
+	 * Add listeners for specified keycode
+	 * @author Toddez
+	 * @param {Number} keycode 
+	 * @param {Function} onDown 
+	 * @param {Function} onUp 
+	 */
 	static registerKey(keycode, onDown, onUp) {
 		Canvas.keys[keycode] = { down: false, onDown: onDown, onUp: onUp };
 	}
 
+	/**
+	 * Returns if specified key is down
+	 * @author Toddez
+	 * @param {Number} keycode 
+	 * @returns {Boolean} isDown
+	 */
 	static getKeyDown(keycode) {
 		if (Canvas.keys[keycode])
 			return Canvas.keys[keycode].down;
