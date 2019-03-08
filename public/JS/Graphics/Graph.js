@@ -13,16 +13,6 @@ class Graph {
 		this.colors = new Array();
 		this.functions = new Array();
 		this.variables = '';
-
-		this.lineShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying mediump vec4 vColor; varying mediump vec2 vRes; void main(void) { float x = aPos.x; float y = aPos.y; x = float(X); y = float(Y); float z = 0.0; vec2 position = (uMatrix * vec3(x, y, 1.0)).xy; vec4 color = aColor; if (abs(position.x) > 1.01 || abs(position.y) > 1.01) { color = vec4(0.0, 0.0, 0.0, 0.0); z = 1.0; } gl_Position = vec4(position.xy, z, 1.0); vColor = color; vRes = uRes; }';
-
-		this.pointShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; uniform vec2 uRes; varying mediump vec4 vColor; varying mediump vec2 vRes; varying mediump vec2 vPos; void main(void) { vec2 pos = vec2POS; vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy; gl_Position = vec4(position.xy, 0.0, 1.0); vPos = position; vColor = aColor; gl_PointSize = 7.0; vRes = uRes; }';
-
-		this.pointCalcShader = 'attribute vec2 aPos; attribute vec4 aColor; uniform mat3 uMatrix; varying mediump vec4 vColor; varying mediump vec2 vPos; void main(void) { vec2 pos = vec2POS; vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy; gl_Position = vec4(0.0, 0.0, 1.0, 1.0); vPos = position; vColor = aColor; gl_PointSize = 0.0; }';
-
-		this.fragmentShader = 'varying mediump vec4 vColor; varying mediump vec2 vRes; void main(void) { gl_FragColor = vColor; if(gl_FragCoord.x < 1.0 || vRes.x - gl_FragCoord.x < 1.0 || gl_FragCoord.y < 1.0 || vRes.y - gl_FragCoord.y < 1.0) { gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); }}';
-
-		this.pointFragmentShader = 'varying mediump vec4 vColor; varying mediump vec2 vPos; void main(void) { gl_FragColor = vec4(vPos.x / 2.0 + 0.5, vPos.y / 2.0 + 0.5, 0.0, 0.0); }';
 	}
 
 	/**
@@ -109,7 +99,7 @@ class Graph {
 		let oneScaledX = 1 / canvas.scale.x;
 		let oneScaledY = 1 / canvas.scale.y;
 
-		let fragment = this.fragmentShader;
+		let fragment = fragmentShader;
 
 		canvas.flush('CLEAR');
 		text.flush2d();
@@ -122,7 +112,7 @@ class Graph {
 						let x = functions[i].x;
 						let y = 'aPos.y';
 
-						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
@@ -133,7 +123,7 @@ class Graph {
 						let x = 'aPos.x';
 						let y = functions[i].y;
 
-						let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
@@ -143,17 +133,17 @@ class Graph {
 					try {
 						let pos = functions[i].pos;
 
-						let vertex = this.pointCalcShader.replace(/(POS)/gm, pos);
+						let vertex = pointCalcShader.replace(/(POS)/gm, pos);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
-						canvas.flush('POINT', true, vertex, this.pointFragmentShader, this.time, true);
+						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time, true);
 
-						vertex = this.pointShader.replace(/(POS)/gm, pos);
+						vertex = pointShader.replace(/(POS)/gm, pos);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
-						canvas.flush('POINT', true, vertex, this.fragmentShader, this.time);
+						canvas.flush('POINT', true, vertex, fragmentShader, this.time);
 
 						text.renderPointText(oneScaledX, oneScaledY, canvas.points[pointIndex], rgbaToHex(functions[i].color));
 						text.flush2d(true);
@@ -170,7 +160,7 @@ class Graph {
 		let x = 'aPos.x';
 		let y = 'aPos.y';
 
-		let vertex = this.lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+		let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
 		canvas.renderXAxle(centerX, centerY, oneScaledX, new Color(0.6, 0.6, 0.6, 1));
 		canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -229,3 +219,103 @@ class Graph {
 		text.flush2d(true);
 	}
 }
+
+lineShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+	uniform vec2 uRes;
+
+	varying mediump vec4 vColor;
+	varying mediump vec2 vRes;
+
+	void main(void) {
+		float x = aPos.x;
+		float y = aPos.y;
+		x = float(X);
+		y = float(Y);
+		vec2 position = (uMatrix * vec3(x, y, 1.0)).xy;
+
+		float z = 0.0;
+		vec4 color = aColor;
+		if (abs(position.x) > 1.01 || abs(position.y) > 1.01) {
+			z = 1.0;
+			color.a = 0.0;
+		} 
+
+		vColor = color;
+		vRes = uRes;
+
+		gl_Position = vec4(position.xy, z, 1.0);
+	}
+`;
+
+pointShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+	uniform vec2 uRes;
+
+	varying mediump vec4 vColor;
+	varying mediump vec2 vRes;
+	varying mediump vec2 vPos;
+
+	void main(void) { 
+		vec2 pos = vec2POS;
+		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
+
+		vPos = position;
+		vColor = aColor;
+		vRes = uRes;
+
+		gl_Position = vec4(position.xy, 0.0, 1.0);
+		gl_PointSize = 7.0;
+	}
+`;
+
+pointCalcShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+
+	varying mediump vec4 vColor;
+	varying mediump vec2 vPos;
+
+	void main(void) {
+		vec2 pos = vec2POS;
+		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
+
+		vPos = position;
+		vColor = aColor;
+
+		gl_Position = vec4(0.0, 0.0, 1.0, 1.0);
+		gl_PointSize = 0.0;
+	}
+`;
+
+fragmentShader = `
+	varying mediump vec4 vColor; 
+	varying mediump vec2 vRes; 
+
+	void main(void) {
+		mediump vec4 color = vColor;
+
+		if(gl_FragCoord.x < 1.0 || vRes.x - gl_FragCoord.x < 1.0 || gl_FragCoord.y < 1.0 || vRes.y - gl_FragCoord.y < 1.0) { 
+			color.a = 0.0;
+		}
+
+		gl_FragColor = color; 
+	}
+`;
+
+pointFragmentShader = `
+	varying mediump vec4 vColor;
+	varying mediump vec2 vPos;
+
+	void main(void) {
+		gl_FragColor = vec4(vPos.x / 2.0 + 0.5, vPos.y / 2.0 + 0.5, 0.0, 0.0);
+	}
+`;
