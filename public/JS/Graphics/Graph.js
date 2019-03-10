@@ -137,15 +137,15 @@ class Graph {
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
-						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time, true);
+						canvas.flush('POINT', true, vertex, pointCalcFragmentShader, this.time, true);
 
 						vertex = pointShader.replace(/(POS)/gm, pos);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
-						canvas.flush('POINT', true, vertex, fragmentShader, this.time);
+						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time);
 
-						text.renderPointText(oneScaledX, oneScaledY, canvas.points[pointIndex], rgbaToHex(functions[i].color));
+						text.renderPointText(oneScaledX, oneScaledY, canvas.points[pointIndex]);
 						text.flush2d(true);
 
 						pointIndex++;
@@ -222,6 +222,7 @@ class Graph {
 
 // Define all neccessary shaders
 
+// Lines
 const lineShader = `
 	attribute vec2 aPos;
 	attribute vec4 aColor;
@@ -253,51 +254,6 @@ const lineShader = `
 	}
 `;
 
-const pointShader = `
-	attribute vec2 aPos;
-	attribute vec4 aColor;
-
-	uniform mat3 uMatrix;
-	uniform vec2 uRes;
-
-	varying mediump vec4 vColor;
-	varying mediump vec2 vRes;
-	varying mediump vec2 vPos;
-
-	void main(void) { 
-		vec2 pos = vec2POS;
-		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
-
-		vPos = position;
-		vColor = aColor;
-		vRes = uRes;
-
-		gl_Position = vec4(position.xy, 0.0, 1.0);
-		gl_PointSize = 7.0;
-	}
-`;
-
-const pointCalcShader = `
-	attribute vec2 aPos;
-	attribute vec4 aColor;
-
-	uniform mat3 uMatrix;
-
-	varying mediump vec4 vColor;
-	varying mediump vec2 vPos;
-
-	void main(void) {
-		vec2 pos = vec2POS;
-		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
-
-		vPos = position;
-		vColor = aColor;
-
-		gl_Position = vec4(0.0, 0.0, 1.0, 1.0);
-		gl_PointSize = 0.0;
-	}
-`;
-
 const fragmentShader = `
 	varying mediump vec4 vColor; 
 	varying mediump vec2 vRes; 
@@ -313,7 +269,68 @@ const fragmentShader = `
 	}
 `;
 
+// Points
+const pointShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+	uniform vec2 uRes;
+
+	varying mediump vec4 vColor;
+	varying mediump vec2 vRes;
+
+	void main(void) { 
+		vec2 pos = vec2POS;
+		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
+
+		vColor = aColor;
+		vRes = uRes;
+
+		gl_Position = vec4(position.xy, 0.0, 1.0);
+		gl_PointSize = 15.0;
+	}
+`;
+
 const pointFragmentShader = `
+	varying mediump vec4 vColor; 
+	varying mediump vec2 vRes; 
+
+	void main(void) {
+		mediump vec4 color = vColor;
+
+		mediump vec2 test = gl_PointCoord;
+		mediump vec2 test2 = vec2(0.5, 0.5);
+		if (length(test - test2) > 0.5)
+			discard;
+
+		gl_FragColor = color; 
+	}
+`;
+
+// Point calculation
+const pointCalcShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+
+	varying mediump vec4 vColor;
+	varying mediump vec2 vPos;
+
+	void main(void) {
+		vec2 pos = vec2POS;
+		vec2 position = (uMatrix * vec3(pos.x, pos.y, 1.0)).xy;
+
+		vColor = aColor;
+		vPos = position;
+
+		gl_Position = vec4(0.0, 0.0, 1.0, 1.0);
+		gl_PointSize = 0.0;
+	}
+`;
+
+const pointCalcFragmentShader = `
 	varying mediump vec4 vColor;
 	varying mediump vec2 vPos;
 

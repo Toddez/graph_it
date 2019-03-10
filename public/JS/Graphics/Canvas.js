@@ -241,9 +241,6 @@ class Canvas {
 	 * @param {Color} color 
 	 */
 	renderPointText(oneX, oneY, pos, color) {
-		if (!color)
-			color = '#f0f';
-
 		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
