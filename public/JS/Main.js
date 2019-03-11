@@ -1,10 +1,9 @@
 $(document).ready(function () {
-    let app = new Application(10, 10);
+    let app = new Application(30, 30);
     let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
     let text = new Canvas('2d', new Vector2(500, 500), null, false);
     let graph = new Graph(canvas, text);
 
-    let time = 0;
     let lastInput = 0;
     let inputChanged = false;
 
@@ -25,7 +24,7 @@ $(document).ready(function () {
         graph.setVariables(variableStrings);
     }
 
-    app.onStart = function () {
+    app.onStart = function () {        
         canvas.setBackground(new Color(0.1, 0.1, 0.11, 1));
         canvas.setMargin(new Vector2(400, 0));
         canvas.fullscreen(true);
@@ -41,13 +40,18 @@ $(document).ready(function () {
 
         $('#functions, #variables').on('input', function () {
             inputChanged = true;
-            lastInput = time;
+            lastInput = app.getTime();
         });
         $('#functions, #variables').ready(checkInput);
     };
 
-    app.onUpdate = function () {
-        if (inputChanged == true && time - lastInput >= 0.15) {
+    app.onRender = function (deltaTime) {     
+        graph.time = app.getTime();
+        graph.render();
+    }
+
+    app.onUpdate = function (deltaTime) {        
+        if (inputChanged == true && app.getTime() - lastInput >= 0.15) {
             checkInput();
             inputChanged = false;
         }
@@ -93,11 +97,6 @@ $(document).ready(function () {
             canvas.position.x += deltaMousePosX;
             canvas.position.y += deltaMousePosY;
         }
-
-        graph.time = time;
-        graph.render();
-
-        time += 1 / app.ups;
     }
 
     app.start();
