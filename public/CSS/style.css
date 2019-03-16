@@ -1,3 +1,5 @@
+/* Global */
+
 body {
 	margin: 0;
 	padding: 0;
@@ -23,11 +25,64 @@ body {
 	background-color: rgba(55, 55, 57, 255);
 }
 
+a, a * {
+	cursor: pointer;
+	color: #61cdef;
+}
+
+.noselect {
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/* Aside */
+
+aside {
+	left: 0;
+	top: 0;
+	position: absolute;
+	width: 400px;
+	height: 100%;
+	overflow: hidden;
+	box-sizing: border-box;
+	border: none;
+	margin: none;
+	padding: none;
+}
+
+aside textarea {
+	height: 50%;
+	width: 100%;
+	overflow: scroll;
+	overflow-x: hidden;
+	box-sizing: border-box;
+	border: none;
+	margin: none;
+	padding: 10px;
+	resize: none;
+	cursor: auto;
+}
+
+#variables {
+	border-top: 1px solid rgba(50, 50, 50, 255);
+}
+
+/* Canvas */
+
 canvas {
 	left: 400px;
 	top: 0;
 	position: absolute;
 	background-color: transparent !important;
+	cursor: grab;
+}
+
+canvas.grabbing {
+	cursor: grabbing;
 }
 
 #webgl {
@@ -38,50 +93,56 @@ canvas {
 	z-index: 1;
 }
 
-#functions {
-	left: 0;
-	top: 0;
+/* Nav */
+
+nav {
 	position: absolute;
-	width: 400px;
-	height: 50%;
-	overflow: scroll;
-	overflow-x: hidden;
-	box-sizing: border-box;
-	border: none;
-	margin: none;
-	padding: 10px;
-	resize: none;
+	left: 400px;
+	top: 0;
+	height: auto;
+	width: auto;
+	z-index: 1;
+	background-color: transparent;
 }
 
-#variables {
-	left: 0;
-	top: 50%;
-	position: absolute;
-	width: 400px;
-	height: 20%;
-	overflow: scroll;
-	overflow-x: hidden;
-	box-sizing: border-box;
-	border: none;
-	border-top: 1px solid rgba(50, 50, 50, 255);
-	margin: none;
+nav #dropdown {
+	cursor: pointer;
+}
+
+nav *:not(#dropdown) {
+	display: none !important;
+}
+
+nav.showing *:not(#dropdown) {
+	display: inline !important;
+}
+
+nav {
 	padding: 10px;
-	resize: none;
+}
+
+nav * {
+	font-size: 24px;
+	padding: 0 5px;
 }
 
 #info {
+	display: none;
 	left: 0;
 	bottom: 0;
 	position: absolute;
 	width: 400px;
-	height: 30% !important;
+	height: 100% !important;
 	overflow: scroll;
 	overflow-x: hidden;
 	box-sizing: border-box;
 	border: none;
-	border-top: 1px solid rgba(50, 50, 50, 255);
 	margin: none;
 	padding: 10px;
+}
+
+#info.showing {
+	display: inherit !important;
 }
 
 #info ul {

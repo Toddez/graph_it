@@ -1,5 +1,25 @@
 window.addEventListener('load', () => {
 
+    let showing = false;
+    document.getElementById('dropdown').addEventListener('click', () => {
+        if (showing == false)
+            document.getElementsByTagName('nav')[0].classList.add('showing');
+        else
+            document.getElementsByTagName('nav')[0].classList.remove('showing');
+
+        showing = !showing;
+    });
+
+    let showingInfo = false;
+    document.getElementById('infoToggle').addEventListener('click', () => {
+        if (showingInfo == false)
+            document.getElementById('info').classList.add('showing');
+        else
+            document.getElementById('info').classList.remove('showing');
+
+        showingInfo = !showingInfo;
+    });
+
     let app = new Application(30, 30);
     let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
     let text = new Canvas('2d', new Vector2(500, 500), null, false);
@@ -66,8 +86,14 @@ window.addEventListener('load', () => {
         let scrollDelta = Canvas.scrollDelta();
 
         if (Canvas.mouseDown) {
+            document.getElementById(canvas.id).classList.add('grabbing');
+            document.getElementById(text.id).classList.add('grabbing');
+
             canvas.position.x += ((mouseDelta.x * 2) / (canvas.dimensions.x - canvas.margin.x) * (1 / canvas.scale.x));
             canvas.position.y -= ((mouseDelta.y * 2) / (canvas.dimensions.y - canvas.margin.y) * (1 / canvas.scale.y));
+        } else {
+            document.getElementById(canvas.id).classList.remove('grabbing');
+            document.getElementById(text.id).classList.remove('grabbing');
         }
 
         let mouseRealX = map(Canvas.mousePos.x * 2, 0, canvas.dimensions.x - canvas.margin.x, -1, 1) * (1 / canvas.scale.x);
