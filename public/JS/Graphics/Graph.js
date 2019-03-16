@@ -256,16 +256,11 @@ const lineShader = `
 
 const fragmentShader = `
 	varying mediump vec4 vColor; 
-	varying mediump vec2 vRes; 
 
 	void main(void) {
 		mediump vec4 color = vColor;
 
-		if(gl_FragCoord.x < 1.0 || vRes.x - gl_FragCoord.x < 1.0 || gl_FragCoord.y < 1.0 || vRes.y - gl_FragCoord.y < 1.0) { 
-			color.a = 0.0;
-		}
-
-		gl_FragColor = color; 
+		gl_FragColor = vColor;
 	}
 `;
 
