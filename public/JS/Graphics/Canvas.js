@@ -36,13 +36,15 @@ class Canvas {
 	 */
 	createElement() {
 		// Get parent element
-		let parentElement = $('body');
+		let parentElement = window.document.body;
+
 		if (this.parent)
-			parentElement = $(this.parent);
+			parentElement = document.getElementById(this.parent);
 
 		// Create and append canvas element to parent element
-		parentElement.append('<canvas id="' + this.id + '"></canvas>');
-		this.element = document.getElementById(this.id);
+		this.element = document.createElement('canvas');
+		this.element.id = this.id;
+		parentElement.append(this.element);
 	}
 
 	/**
@@ -643,7 +645,7 @@ class Canvas {
 	static setupKeys() {
 		Canvas.keys = {};
 
-		$(window).on('keydown', function (event) {
+		window.addEventListener('keydown', (event) => {
 			let key = Canvas.keys[event.which];
 			if (key) {
 				key.down = true;
@@ -652,7 +654,7 @@ class Canvas {
 			}
 		});
 
-		$(window).on('keyup', function (event) {
+		window.addEventListener('keyup', (event) => {
 			let key = Canvas.keys[event.which];
 			if (key) {
 				key.down = false;
@@ -724,10 +726,9 @@ class Canvas {
 // Static variables
 Canvas.canvases = new Array();
 
-$(document).ready(function () {
-
+window.addEventListener('load', () => {
 	// Set global callbacks
-	$(window).resize(Canvas.windowResizeCallback);
+	window.addEventListener('resize', Canvas.windowResizeCallback)
 
 	// Setup input
 	Canvas.setupMouse();

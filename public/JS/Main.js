@@ -1,4 +1,5 @@
-$(document).ready(function () {
+window.addEventListener('load', () => {
+
     let app = new Application(30, 30);
     let canvas = new Canvas('webgl', new Vector2(500, 500), null, true);
     let text = new Canvas('2d', new Vector2(500, 500), null, false);
@@ -17,14 +18,14 @@ $(document).ready(function () {
     }
 
     function checkInput() {
-        var functionStrings = $('#functions').val().split('\n');
+        var functionStrings = document.getElementById('functions').value.split('\n');
         graph.setFunctions(functionStrings);
 
-        var variableStrings = $('#variables').val().split('\n');
+        var variableStrings = document.getElementById('variables').value.split('\n');
         graph.setVariables(variableStrings);
     }
 
-    app.onStart = function () {        
+    app.onStart = function () {
         canvas.setBackground(new Color(0.1, 0.1, 0.11, 1));
         canvas.setMargin(new Vector2(400, 0));
         canvas.fullscreen(true);
@@ -38,19 +39,24 @@ $(document).ready(function () {
 
         canvas.scale = new Vector2(xScale, yScale);
 
-        $('#functions, #variables').on('input', function () {
+        let inputCallback = () => {
             inputChanged = true;
             lastInput = app.getTime();
-        });
-        $('#functions, #variables').ready(checkInput);
+        }
+
+        document.getElementById('functions').addEventListener('input', inputCallback);
+        document.getElementById('variables').addEventListener('input', inputCallback);
+
+        document.getElementById('functions').addEventListener('load', checkInput);
+        document.getElementById('variables').addEventListener('load', checkInput);
     };
 
-    app.onRender = function (deltaTime) {     
+    app.onRender = function (deltaTime) {
         graph.time = app.getTime();
         graph.render();
     }
 
-    app.onUpdate = function (deltaTime) {        
+    app.onUpdate = function (deltaTime) {
         if (inputChanged == true && app.getTime() - lastInput >= 0.15) {
             checkInput();
             inputChanged = false;
