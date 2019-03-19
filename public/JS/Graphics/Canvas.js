@@ -56,6 +56,7 @@ class Canvas {
 		this.gl = this.element.getContext('webgl2');
 
 		let ext = this.gl.getExtension('EXT_color_buffer_float');
+		this.gl.disable(this.gl.SAMPLE_COVERAGE);
 
 		this.pointTexture = this.gl.createTexture();
 		this.gl.bindTexture(this.gl.TEXTURE_2D, this.pointTexture);
