@@ -305,7 +305,7 @@ class Canvas {
 			if (Math.round(y / scale) % 5 == 0)
 				color.r = color.g = color.b = 0.3;
 
-			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX * 1.005  : centerX + oneScaledX * 1.005 );
+			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX * 1.005 : centerX + oneScaledX * 1.005);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
@@ -314,7 +314,7 @@ class Canvas {
 
 			this.indices.push(this.indices.length);
 
-			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX * 1.005  : centerX - oneScaledX * 1.005 );
+			this.vertices.push((i % 2 == 0) ? centerX + oneScaledX * 1.005 : centerX - oneScaledX * 1.005);
 			this.vertices.push(y);
 			this.vertices.push(color.r);
 			this.vertices.push(color.g);
