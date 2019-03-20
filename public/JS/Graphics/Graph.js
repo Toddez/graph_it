@@ -388,6 +388,8 @@ function getInfo(left) {
 		case 'y\'(x': func.type = 'LINE'; func.set = 'y'; func.derivitive = true; func.limit = '*'; return func;
 		case 'x\'(y': func.type = 'LINE'; func.set = 'x'; func.derivitive = true; func.limit = '*'; return func;
 	}
+
+	return;
 }
 
 function parseFunctions(lines) {
@@ -405,15 +407,16 @@ function parseFunctions(lines) {
 			func.seperator = seperator;
 
 			let info = getInfo(left);
-			if (seperator != '=')
-				func.type = 'AREA';
-			else
-				func.type = info.type;
+			if (info) {
+				if (seperator != '=')
+					func.type = 'AREA';
+				else
+					func.type = info.type;
 
-			func.set = info.set;
-			func.derivitive = info.derivitive;
-			func.limit = info.limit;
-
+				func.set = info.set;
+				func.derivitive = info.derivitive;
+				func.limit = info.limit;
+			}
 		} else {
 			if (line[0] == '(') {
 				func.type = 'POINT';
