@@ -130,9 +130,8 @@ nav .option {
 /* info */
 
 #info {
-	display: none;
-	left: 0;
-	bottom: 0;
+	left: -100%;
+	top: 0;
 	position: absolute;
 	width: 400px;
 	height: 100% !important;
@@ -142,10 +141,11 @@ nav .option {
 	border: none;
 	margin: none;
 	padding: 10px;
+	transition: 0.25s;
 }
 
 #info.showing {
-	display: inherit !important;
+	left: 0;
 }
 
 #info ul {
