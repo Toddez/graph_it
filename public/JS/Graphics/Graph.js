@@ -21,6 +21,7 @@ class Graph {
 	 * @param {Array.<String>} functions 
 	 */
 	setFunctions(functions) {
+		parseFunctions(functions);
 		this.functions = new Array();
 
 		for (let i = 0; i < functions.length; i++) {
@@ -333,3 +334,107 @@ const pointCalcFragmentShader = `
 		gl_FragColor = vec4(vPos.x / 2.0 + 0.5, vPos.y / 2.0 + 0.5, 0.0, 0.0);
 	}
 `;
+
+function getLimit(string) {
+	if (string.includes('[') && string.includes(']')) {
+		let start = 0;
+		let end = string.length;
+		while (string[start] != '[')
+			start++;
+
+		while (string[end] != ']')
+			end--;
+
+		return string.substring(start + 1, end).split(',');
+	} else {
+		return [0, 0];
+	}
+}
+
+function getSeperator(line) {
+	if (line.includes('<'))
+		return '<';
+	else if (line.includes('>'))
+		return '>';
+	else if (line.includes('<='))
+		return '<=';
+	else if (line.includes('>='))
+		return '>=';
+	else if (line.includes('='))
+		return '=';
+
+	return '';
+}
+
+function getInfo(left) {
+	let func = {};
+
+	let set = left.substring(0, 2);
+	switch (set) {
+		case 'y[': func.type = 'LINE'; func.set = 'y'; func.derivitive = false; func.limit = getLimit(left); return func;
+		case 'x[': func.type = 'LINE'; func.set = 'x'; func.derivitive = false; func.limit = getLimit(left); return func;
+	}
+
+	set = left.substring(0, 3);
+	switch (set) {
+		case 'y(x': func.type = 'LINE'; func.set = 'y'; func.derivitive = false; func.limit = '*'; return func;
+		case 'x(y': func.type = 'LINE'; func.set = 'x'; func.derivitive = false; func.limit = '*'; return func;
+		case 'y\'[': func.type = 'LINE'; func.set = 'y'; func.derivitive = true; func.limit = getLimit(left); return func;
+		case 'x\'[': func.type = 'LINE'; func.set = 'x'; func.derivitive = true; func.limit = getLimit(left); return func;
+	}
+
+	set = left.substring(0, 4);
+	switch (set) {
+		case 'y\'(x': func.type = 'LINE'; func.set = 'y'; func.derivitive = true; func.limit = '*'; return func;
+		case 'x\'(y': func.type = 'LINE'; func.set = 'x'; func.derivitive = true; func.limit = '*'; return func;
+	}
+}
+
+function parseFunctions(lines) {
+	let functions = { lines: new Array(), areas: new Array(), points: new Array() };
+
+	for (let i = 0; i < lines.length; i++) {
+		let line = lines[i].replace(/\s/g, '');
+		let func = {};
+
+		let seperator = getSeperator(line);
+		if (seperator != '') {
+			let sides = line.split(seperator);
+			let left = sides[0];
+			func.value = sides[1];
+			func.seperator = seperator;
+
+			let info = getInfo(left);
+			if (seperator != '=')
+				func.type = 'AREA';
+			else
+				func.type = info.type;
+
+			func.set = info.set;
+			func.derivitive = info.derivitive;
+			func.limit = info.limit;
+
+		} else {
+			if (line[0] == '(') {
+				func.type = 'POINT';
+				func.value = line;
+			}
+		}
+
+		if (func.type && func.value)
+			switch (func.type) {
+				case 'LINE':
+					functions.lines.push(func);
+					continue;
+				case 'AREA':
+					functions.areas.push(func);
+					continue;
+				case 'POINT':
+					functions.points.push(func);
+					continue;
+			}
+	}
+
+	console.log(functions);
+
+}
