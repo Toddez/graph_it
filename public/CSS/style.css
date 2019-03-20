@@ -110,7 +110,7 @@ nav #dropdown {
 }
 
 nav *:not(#dropdown) {
-	display: none !important;
+	display: none;
 }
 
 nav.showing *:not(#dropdown) {
@@ -142,10 +142,12 @@ nav .option {
 	margin: none;
 	padding: 10px;
 	transition: 0.25s;
+	opacity: 0;
 }
 
 #info.showing {
 	left: 0;
+	opacity: 1;
 }
 
 #info ul {
