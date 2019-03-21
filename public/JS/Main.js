@@ -1,16 +1,22 @@
 window.addEventListener('load', () => {
 
-    let showing = false;
-    document.getElementById('dropdown').addEventListener('click', () => {
-        if (showing == false)
-            document.getElementsByTagName('nav')[0].classList.add('showing');
-        else
-            document.getElementsByTagName('nav')[0].classList.remove('showing');
+    let showingInput = true;
+    let showingInfo = false;
 
-        showing = !showing;
+    document.getElementById('inputToggle').addEventListener('click', () => {
+        if (showingInput == true) {
+            document.getElementById('asideWrapper').classList.add('hidden');
+            document.getElementById('inputToggle').classList.add('fa-arrow-alt-circle-right');
+            document.getElementById('inputToggle').classList.remove('fa-arrow-alt-circle-left');
+        } else {
+            document.getElementById('asideWrapper').classList.remove('hidden');
+            document.getElementById('inputToggle').classList.add('fa-arrow-alt-circle-left');
+            document.getElementById('inputToggle').classList.remove('fa-arrow-alt-circle-right');
+        }
+
+        showingInput = !showingInput;
     });
 
-    let showingInfo = false;
     document.getElementById('infoToggle').addEventListener('click', () => {
         if (showingInfo == false)
             document.getElementById('info').classList.add('showing');
@@ -71,6 +77,18 @@ window.addEventListener('load', () => {
     };
 
     app.onRender = function (deltaTime) {
+        canvas.setMargin(new Vector2(showingInput ? 400 : 0, 0));
+        text.setMargin(new Vector2(showingInput ? 400 : 0, 0));
+
+        canvas.element.style = 'left: ' + canvas.margin.x + 'px';
+        text.element.style = 'left: ' + text.margin.x + 'px';
+
+        let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
+        let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 5);
+        let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 5);
+
+        canvas.scale = new Vector2(xScale, yScale);
+
         graph.time = app.getTime();
         graph.render();
     }

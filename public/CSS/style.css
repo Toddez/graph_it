@@ -41,20 +41,24 @@ a, a * {
 
 /* Aside */
 
-aside {
+aside, #asideWrapper {
 	left: 0;
 	top: 0;
 	position: absolute;
 	width: 400px;
 	height: 100%;
-	overflow: hidden;
 	box-sizing: border-box;
 	border: none;
 	margin: none;
 	padding: none;
+	transition: 0.25s;
 }
 
-aside textarea {
+#asideWrapper.hidden {
+	left: -100%;
+}
+
+#asideWrapper textarea {
 	height: 50%;
 	width: 100%;
 	overflow: scroll;
@@ -79,6 +83,7 @@ canvas {
 	position: absolute;
 	background-color: transparent !important;
 	cursor: grab;
+	transition: 0.25s;
 }
 
 canvas.grabbing {
@@ -99,32 +104,20 @@ nav {
 	position: absolute;
 	left: 400px;
 	top: 0;
-	height: auto;
-	width: auto;
 	z-index: 1;
 	background-color: transparent;
-}
-
-nav #dropdown {
-	cursor: pointer;
-}
-
-nav *:not(#dropdown) {
-	display: none;
-}
-
-nav.showing *:not(#dropdown) {
-	display: inline !important;
-}
-
-nav {
 	padding: 10px;
+	text-align: center;
 }
 
 nav .option {
 	font-size: 24px;
-	padding: 0 5px;
+	padding: 5px;
 	cursor: pointer;
+}
+
+#asideWrapper.hidden nav .option:not(#inputToggle) {
+	display: none;
 }
 
 /* info */
