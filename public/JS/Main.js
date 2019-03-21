@@ -39,10 +39,9 @@ window.addEventListener('load', () => {
 
     function checkInput() {
         var functionStrings = document.getElementById('functions').value.split('\n');
-        graph.setFunctions(functionStrings);
-
         var variableStrings = document.getElementById('variables').value.split('\n');
-        graph.setVariables(variableStrings);
+
+        graph.setFunctions(functionStrings, variableStrings);
     }
 
     app.onStart = function () {
