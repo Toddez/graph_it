@@ -1,5 +1,6 @@
 window.addEventListener('load', () => {
 
+    let lastShowingInput = true;
     let showingInput = true;
     let showingInfo = false;
 
@@ -77,17 +78,18 @@ window.addEventListener('load', () => {
     };
 
     app.onRender = function (deltaTime) {
-        canvas.setMargin(new Vector2(showingInput ? 400 : 0, 0));
-        text.setMargin(new Vector2(showingInput ? 400 : 0, 0));
+        if (showingInput != lastShowingInput) {
+            canvas.setMargin(new Vector2(showingInput ? 400 : 0, 0));
+            text.setMargin(new Vector2(showingInput ? 400 : 0, 0));
 
-        canvas.element.style = 'left: ' + canvas.margin.x + 'px';
-        text.element.style = 'left: ' + text.margin.x + 'px';
+            canvas.element.style = 'left: ' + canvas.margin.x + 'px';
+            text.element.style = 'left: ' + text.margin.x + 'px';
 
-        let minDim = Math.min((canvas.dimensions.x - canvas.margin.x), (canvas.dimensions.y - canvas.margin.y));
-        let xScale = (canvas.dimensions.y - canvas.margin.y) / (minDim * 5);
-        let yScale = (canvas.dimensions.x - canvas.margin.x) / (minDim * 5);
+            canvas.fullscreen(true);
+            text.fullscreen(true);
 
-        canvas.scale = new Vector2(xScale, yScale);
+            lastShowingInput = showingInput;
+        }
 
         graph.time = app.getTime();
         graph.render();
