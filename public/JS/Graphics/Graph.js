@@ -43,12 +43,14 @@ class Graph {
 
 		for (let i = 0; i < string.length; i++) {
 			if (numbers.includes(string[i]) || string[i] == ')' || string[i] == 'x' || string[i] == 'y' || (string[i] == 't' && string[i + 1] != 'a' && string[i - 1] != 'a')) {
-				if (string[i + 1] != '.' && string[i + 1] != ')' && string[i + 1] != '-' && string[i + 1] != '+' && string[i + 1] != '/' && string[i + 1] != '*' && string[i + 1] != ' ' && !numbers.includes(string[i + 1])) {
+				if (string[i + 1] != '.' && string[i + 1] != ',' && string[i + 1] != ')' && string[i + 1] != '-' && string[i + 1] != '+' && string[i + 1] != '/' && string[i + 1] != '*' && string[i + 1] != ' ' && !numbers.includes(string[i + 1])) {
 					string = string.substring(0, i + 1) + '*' + string.substring(i + 1);
 				}
 			}
 		}
 
+		console.log(string);
+		
 		return string;
 	}
 
