@@ -15,6 +15,12 @@ class Graph {
 		this.variables = '';
 	}
 
+	/**
+	 * Parses a function by converting ints to floats (1 -> 1.0), adding * between sets (2x -> 2*x)
+	 * @author Toddez
+	 * @param {String} string 
+	 * @returns {String} string
+	 */
 	sanitize(string) {
 		string = string + ' ';
 		const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
@@ -509,5 +515,4 @@ function parseFunctions(lines) {
 	}
 
 	console.log(functions);
-
 }
