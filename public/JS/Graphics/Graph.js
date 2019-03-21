@@ -49,8 +49,6 @@ class Graph {
 			}
 		}
 
-		console.log(string);
-		
 		return string;
 	}
 
