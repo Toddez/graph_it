@@ -1,3 +1,4 @@
+const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 class Graph {
 
 	/**
@@ -15,6 +16,48 @@ class Graph {
 		this.variables = '';
 	}
 
+	derivitiveY(func) {
+		return ('(((' + (func.replace(/(\+0.001)/gm, '+0.002').replace(/(x)/gm, '(x+0.001)')) + ')-(' + func + '))/0.001)').replace(/(x)/gm, 'Å');
+	}
+
+	referenceY(current, functions) {
+		let value = functions[current].y.replace(/'/g, '');
+		for (let j = 0; j < value.length; j++) {
+			if (value[j] == 'y' && numbers.includes(value[j + 1])) {
+				let length = 0;
+				let stop = false;
+				let org = 'y';
+				for (let k = j + 1; k < value.length && stop == false; k++) {
+					if (numbers.includes(value[k])) {
+						length++;
+						org = org + value[k];
+					} else {
+						stop = true;
+					}
+				}
+
+				let index = parseInt(value.substring(j + 1, j + 1 + length));
+				
+				let functionIndex = 0;
+				for (let k = 0; k < functions.length; k++) {
+					if (functions[k].type.substring(0, 2) == 'y=' && functionIndex != current) {
+						if (functionIndex == index) {
+							let func = '(' + this.referenceY(k, functions) + ')';
+							if (functions[k].type[2] == "'")
+								func = this.derivitiveY(func);
+							
+							value = value.replace(org, func);										
+						}
+
+						functionIndex++;
+					}
+				}
+			}
+		}
+
+		return value;
+	}
+
 	/**
 	 * Parses a function by converting ints to floats (1 -> 1.0), adding * between sets (2x -> 2*x)
 	 * @author Toddez
@@ -23,7 +66,6 @@ class Graph {
 	 */
 	sanitize(string) {
 		string = string + ' ';
-		const numbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
 		let current = false;
 		let start, length = 0;
@@ -74,9 +116,9 @@ class Graph {
 
 				let type = string[0];
 				if (type == 'x')
-					this.functions.push({ type: type + string[1], x: string.substring(2, string.length) })
+					this.functions.push({ type: type + string[1] + string[2], x: string.split('=')[1] });
 				else if (type == 'y')
-					this.functions.push({ type: type + string[1], y: string.substring(2, string.length) })
+					this.functions.push({ type: type + string[1] + string[2], y: string.split('=')[1] });
 				else if (type == '(' && string[string.length - 1] == ')') {
 					this.functions.push({ type: type, pos: string });
 				}
@@ -154,21 +196,11 @@ class Graph {
 		if (functions.length > 0) {
 			canvas.points = new Array();
 			let pointIndex = 0;
+
 			for (let i = 0; i < functions.length; i++) {
-				if (functions[i].type == 'x=') {
+				if (functions[i].type == "x='") {
 					try {
-						let x = this.sanitize(functions[i].x);
-						let y = 'aPos.y';
-
-						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
-
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
-						canvas.flush('LINE', true, vertex, fragment, this.time);
-					} catch { }
-				} else if (functions[i].type == "x'") {
-					try {
-						let x1 = this.sanitize(functions[i].x.substring(1));
+						let x1 = this.sanitize(functions[i].x);
 						let x2 = x1;
 
 						let x = '((' + x1.replace(/(y)/gm, '(y+0.001)') + ')-(' + x2 + '))/0.001';
@@ -181,24 +213,38 @@ class Graph {
 						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
-				} else if (functions[i].type == 'y=') {
+				} else if (functions[i].type.substring(0, 2) == 'x=') {
 					try {
-						let x = 'aPos.x';
-						let y = this.sanitize(functions[i].y);
+						let x = this.sanitize(functions[i].x);
+						let y = 'aPos.y';
 
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+
+						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
+						canvas.flush('LINE', true, vertex, fragment, this.time);
+					} catch { }
+				} else if (functions[i].type == "y='") {
+					let x = 'aPos.x';
+
+					let y = this.derivitiveY(this.referenceY(i, functions)).replace(/(Å)/gm, 'x');
+
+					console.log(y);
+
+					y = this.sanitize(y);
+					
+
+					try {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
-				} else if (functions[i].type == "y'") {
+				} else if (functions[i].type.substring(0, 2) == 'y=') {
 					try {
 						let x = 'aPos.x';
-						let y1 = this.sanitize(functions[i].y.substring(1));
-						let y2 = y1;
-
-						let y = '((' + y1.replace(/(x)/gm, '(x+0.001)') + ')-(' + y2 + '))/0.001';
+						let y = this.sanitize(functions[i].y);
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
