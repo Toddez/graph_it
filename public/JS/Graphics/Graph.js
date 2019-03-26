@@ -16,11 +16,11 @@ class Graph {
 		this.variables = '';
 	}
 
-	derivitiveY(func) {
-		return ('(((' + (func.replace(/(\+0.001)/gm, '+0.002').replace(/(x)/gm, '(x+0.001)')) + ')-(' + func + '))/0.001)').replace(/(x)/gm, 'Å');
+	derivitiveY(func, prec) {
+		return '(((' + func.replace(/(x)/gm, '(x+' + prec + ')') + ')-(' + func + '))/' + prec + ')'
 	}
 
-	referenceY(current, functions) {
+	referenceY(current, functions, prec) {
 		let value = functions[current].y.replace(/'/g, '');
 		for (let j = 0; j < value.length; j++) {
 			if (value[j] == 'y' && numbers.includes(value[j + 1])) {
@@ -37,16 +37,58 @@ class Graph {
 				}
 
 				let index = parseInt(value.substring(j + 1, j + 1 + length));
-				
+
 				let functionIndex = 0;
 				for (let k = 0; k < functions.length; k++) {
 					if (functions[k].type.substring(0, 2) == 'y=' && functionIndex != current) {
 						if (functionIndex == index) {
-							let func = '(' + this.referenceY(k, functions) + ')';
+							let func = '(' + this.referenceY(k, functions, Math.max(prec * 0.85, 0.01)) + ')';
 							if (functions[k].type[2] == "'")
-								func = this.derivitiveY(func);
-							
-							value = value.replace(org, func);										
+								func = this.derivitiveY(func, prec);
+
+							value = value.replace(org, func);
+						}
+
+						functionIndex++;
+					}
+				}
+			}
+		}
+
+		return value;
+	}
+
+	derivitiveX(func, prec) {
+		return '(((' + func.replace(/(y)/gm, '(y+' + prec + ')') + ')-(' + func + '))/' + prec + ')'
+	}
+
+	referenceX(current, functions, prec) {
+		let value = functions[current].x.replace(/'/g, '');
+		for (let j = 0; j < value.length; j++) {
+			if (value[j] == 'x' && numbers.includes(value[j + 1])) {
+				let length = 0;
+				let stop = false;
+				let org = 'x';
+				for (let k = j + 1; k < value.length && stop == false; k++) {
+					if (numbers.includes(value[k])) {
+						length++;
+						org = org + value[k];
+					} else {
+						stop = true;
+					}
+				}
+
+				let index = parseInt(value.substring(j + 1, j + 1 + length));
+
+				let functionIndex = 0;
+				for (let k = 0; k < functions.length; k++) {
+					if (functions[k].type.substring(0, 2) == 'x=' && functionIndex != current) {
+						if (functionIndex == index) {
+							let func = '(' + this.referenceX(k, functions, Math.max(prec * 0.85, 0.01)) + ')';
+							if (functions[k].type[2] == "'")
+								func = this.derivitiveX(func, prec);
+
+							value = value.replace(org, func);
 						}
 
 						functionIndex++;
@@ -200,13 +242,11 @@ class Graph {
 			for (let i = 0; i < functions.length; i++) {
 				if (functions[i].type == "x='") {
 					try {
-						let x1 = this.sanitize(functions[i].x);
-						let x2 = x1;
-
-						let x = '((' + x1.replace(/(y)/gm, '(y+0.001)') + ')-(' + x2 + '))/0.001';
-
-						let y = 'aPos.y';
-
+						let x = this.derivitiveX(this.referenceX(i, functions, 0.1), 0.1);
+						x = this.sanitize(x);
+						
+						let y = '-aPos.y';
+	
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
@@ -216,7 +256,7 @@ class Graph {
 				} else if (functions[i].type.substring(0, 2) == 'x=') {
 					try {
 						let x = this.sanitize(functions[i].x);
-						let y = 'aPos.y';
+						let y = '-aPos.y';
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
@@ -227,12 +267,9 @@ class Graph {
 				} else if (functions[i].type == "y='") {
 					let x = 'aPos.x';
 
-					let y = this.derivitiveY(this.referenceY(i, functions)).replace(/(Å)/gm, 'x');
-
-					console.log(y);
+					let y = this.derivitiveY(this.referenceY(i, functions, 0.1), 0.1);
 
 					y = this.sanitize(y);
-					
 
 					try {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
