@@ -281,12 +281,12 @@ class Graph {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
 						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
-						if (minX)
+						if (minX != undefined)
 							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
 							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
 
-						if (maxX)
+						if (maxX != undefined)
 							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
 							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
@@ -296,10 +296,10 @@ class Graph {
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
 
-						if (minY)
+						if (minY != undefined)
 							startY = Math.max(startY, minY)
 
-						if (maxY)
+						if (maxY != undefined)
 							endY = Math.min(endY, maxY)
 
 						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
@@ -334,12 +334,12 @@ class Graph {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
 						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
-						if (minX)
+						if (minX != undefined)
 							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
 							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
 
-						if (maxX)
+						if (maxX != undefined)
 							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
 							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
@@ -349,10 +349,10 @@ class Graph {
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
 
-						if (minY)
+						if (minY != undefined)
 							startY = Math.max(startY, minY)
 
-						if (maxY)
+						if (maxY != undefined)
 							endY = Math.min(endY, maxY)
 
 						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
@@ -392,12 +392,12 @@ class Graph {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
 						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
-						if (minY)
+						if (minY != undefined)
 							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
 							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
 
-						if (maxY)
+						if (maxY != undefined)
 							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
@@ -407,10 +407,10 @@ class Graph {
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
 
-						if (minX)
+						if (minX != undefined)
 							startX = Math.max(startX, minX)
 
-						if (maxX)
+						if (maxX != undefined)
 							endX = Math.min(endX, maxX)
 
 						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
@@ -445,12 +445,12 @@ class Graph {
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
 						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
-						if (minY)
+						if (minY != undefined)
 							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
 							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
 
-						if (maxY)
+						if (maxY != undefined)
 							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
@@ -460,10 +460,10 @@ class Graph {
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
 
-						if (minX)
+						if (minX != undefined)
 							startX = Math.max(startX, minX)
 
-						if (maxX)
+						if (maxX != undefined)
 							endX = Math.min(endX, maxX)
 
 						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
