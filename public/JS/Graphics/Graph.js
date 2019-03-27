@@ -518,7 +518,7 @@ class Graph {
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time);
 
-						text.renderPointText(oneScaledX, oneScaledY, canvas.points[pointIndex], new Color(0, 0, 0, 1));
+						text.renderPointText(oneScaledX, oneScaledY, canvas.points[pointIndex], rgbaToHex(functions[i].color));
 						text.flush2d(true);
 
 						pointIndex++;
