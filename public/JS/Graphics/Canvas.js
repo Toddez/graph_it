@@ -493,6 +493,28 @@ class Canvas {
 		for (let i = 0; i < this.text.length; i++) {
 			let text = this.text[i];
 
+			let x = (this.dimensions.x - this.margin.x) / 2 + text.pos.x;
+			let y = (this.dimensions.y - this.margin.y) / 2 + text.pos.y;
+
+			let h = 6;
+			let w = 6 * (text.text + '').length;
+
+			if (x >= this.dimensions.x - this.margin.x - w ) {
+				x = this.dimensions.x - this.margin.x;
+				text.align = 'right';
+			} else if (x < w) {
+				x = 0;
+				text.align = 'left'
+			}
+
+			if (y >= this.dimensions.y - this.margin.y - h ) {
+				y = this.dimensions.y - this.margin.y;
+				text.base = 'bottom';
+			} else if (y < h) {
+				y = 0;
+				text.base = 'top'
+			}
+
 			if (text.color)
 				this.context2d.fillStyle = text.color;
 			else
@@ -508,6 +530,12 @@ class Canvas {
 			else
 				this.context2d.textBaseline = 'top';
 
+			if (y >= this.dimensions.y - this.margin.y) {
+				y = this.dimensions.y - this.margin.y;
+			} else if (y < 0) {
+				y = 0;
+			}
+
 			if (text.stroke) {
 				if (text.strokeWeight)
 					this.context2d.lineWidth = text.strokeWeight;
@@ -515,13 +543,13 @@ class Canvas {
 					this.context2d.lineWidth = 1;
 
 				this.context2d.strokeStyle = text.stroke;
-				this.context2d.strokeText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
+				this.context2d.strokeText(text.text, x, y);
 			} else {
 				this.context2d.strokeStyle = '#fff';
 				this.context2d.lineWidth = 1;
 			}
 
-			this.context2d.fillText(text.text, (this.dimensions.x - this.margin.x) / 2 + text.pos.x, (this.dimensions.y - this.margin.y) / 2 + text.pos.y);
+			this.context2d.fillText(text.text, x, y);
 		}
 
 		this.text = [];
