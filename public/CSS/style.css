@@ -59,7 +59,7 @@ aside, #asideWrapper {
 }
 
 #asideWrapper textarea {
-	height: 50%;
+	height: 33%;
 	width: 100%;
 	overflow: scroll;
 	overflow-x: hidden;
@@ -71,7 +71,7 @@ aside, #asideWrapper {
 	cursor: auto;
 }
 
-#variables {
+#variables, #userFunctions {
 	border-top: 1px solid rgba(50, 50, 50, 255);
 }
 

@@ -14,6 +14,7 @@ class Graph {
 		this.colors = new Array();
 		this.functions = new Array();
 		this.variables = '';
+		this.userFunctions = '';
 	}
 
 	derivitiveY(func, prec) {
@@ -146,10 +147,13 @@ class Graph {
 	 * Set functions
 	 * @author Toddez
 	 * @param {Array.<String>} functions 
+	 * @param {Array.<String>} variables
+	 * @param {Array.<String>} userFunctions
 	 */
-	setFunctions(functions, variables) {
+	setFunctions(functions, variables, userFunctions) {
 		parseFunctions(functions);
 		this.setVariables(variables);
+		this.setUserFunctions(userFunctions);
 		this.functions = new Array();
 
 		for (let i = 0; i < functions.length; i++) {
@@ -222,6 +226,19 @@ class Graph {
 					this.variables = this.variables + 'const ' + variable[0] + '=' + this.sanitize(variable[1]) + ';';
 			}
 		}
+	}
+
+	/**
+	 * Set user functions
+	 * @author Toddez
+	 * @param {Array.<String>} functions 
+	 */
+	setUserFunctions(functions) {
+		this.userFunctions = '';
+
+		for (let i = 0; i < functions.length; i++)
+			if (functions[i] != '')
+				this.userFunctions = this.userFunctions + functions[i];
 	}
 
 	/**
@@ -301,7 +318,7 @@ class Graph {
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
@@ -420,7 +437,7 @@ class Graph {
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
@@ -477,7 +494,7 @@ class Graph {
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
@@ -490,13 +507,13 @@ class Graph {
 						let pos = this.sanitize(functions[i].pos);
 
 						let vertex = pointCalcShader.replace(/(POS)/gm, pos);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + this.userFunctions + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, pointCalcFragmentShader, this.time, true);
 
 						vertex = pointShader.replace(/(POS)/gm, pos);
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time);

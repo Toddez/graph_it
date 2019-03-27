@@ -47,8 +47,9 @@ window.addEventListener('load', () => {
     function checkInput() {
         var functionStrings = document.getElementById('functions').value.split('\n');
         var variableStrings = document.getElementById('variables').value.split('\n');
+        var userFunctionStrings = document.getElementById('userFunctions').value.split('function');
 
-        graph.setFunctions(functionStrings, variableStrings);
+        graph.setFunctions(functionStrings, variableStrings, userFunctionStrings);
     }
 
     app.onStart = function () {
@@ -72,9 +73,11 @@ window.addEventListener('load', () => {
 
         document.getElementById('functions').addEventListener('input', inputCallback);
         document.getElementById('variables').addEventListener('input', inputCallback);
+        document.getElementById('userFunctions').addEventListener('input', inputCallback);
 
         document.getElementById('functions').addEventListener('load', checkInput);
         document.getElementById('variables').addEventListener('load', checkInput);
+        document.getElementById('userFunctions').addEventListener('load', checkInput);
     };
 
     app.onRender = function (deltaTime) {
