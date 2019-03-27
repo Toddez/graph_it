@@ -247,7 +247,7 @@ class Canvas {
 		let textX = (pos.x / oneX) * (this.dimensions.x - this.margin.x) / 2;
 		let textY = -(pos.y / oneY) * (this.dimensions.y - this.margin.y) / 2;
 
-		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ', ' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'center', base: 'middle', stroke: '#000', strokeWeight: 2 });
+		this.text.push({ text: '(' + Math.round((pos.x - this.position.x) * 100) / 100 + ', ' + Math.round((pos.y - this.position.y) * 100) / 100 + ')', pos: new Vector2(textX, textY), color: color, align: 'center', base: 'middle', stroke: '#999', strokeWeight: 1 });
 	}
 
 	/**
@@ -263,9 +263,9 @@ class Canvas {
 		let i = 0;
 		let trueCenterX = Math.round(centerX / scale) * scale;
 		for (let x = trueCenterX - scale * lines; x <= trueCenterX + scale * lines; x += scale) {
-			let color = new Color(0.15, 0.15, 0.15, 1);
+			let color = new Color(0.9, 0.9, 0.9, 1);
 			if (Math.round(x / scale) % 5 == 0)
-				color.r = color.g = color.b = 0.3;
+				color.r = color.g = color.b = 0.6;
 
 			this.vertices.push(x);
 			this.vertices.push((i % 2 == 0) ? centerY - oneScaledY * 1.005 : centerY + oneScaledY * 1.005);
@@ -301,9 +301,9 @@ class Canvas {
 		let i = 0;
 		let trueCenterY = Math.round(centerY / scale) * scale;
 		for (let y = trueCenterY - scale * lines; y <= trueCenterY + scale * lines; y += scale) {
-			let color = new Color(0.15, 0.15, 0.15, 1);
+			let color = new Color(0.9, 0.9, 0.9, 1);
 			if (Math.round(y / scale) % 5 == 0)
-				color.r = color.g = color.b = 0.3;
+				color.r = color.g = color.b = 0.6;
 
 			this.vertices.push((i % 2 == 0) ? centerX - oneScaledX * 1.005 : centerX + oneScaledX * 1.005);
 			this.vertices.push(y);
@@ -341,7 +341,12 @@ class Canvas {
 			let textX = ((x + this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
 			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-			this.text.push({ text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
+			let text = { text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'center', base: 'top', stroke: '#999', strokeWeight: 1 };
+			if (x == 0)
+				text.align = 'right';
+
+			this.text.push(text);
+
 		}
 	}
 
@@ -361,7 +366,7 @@ class Canvas {
 			let textY = ((y - this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
 			if (y != 0)
-				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#eee', align: 'center', base: 'middle', stroke: '#333', strokeWeight: 2 });
+				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'right', base: 'middle', stroke: '#999', strokeWeight: 1 });
 		}
 	}
 

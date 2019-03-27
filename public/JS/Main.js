@@ -52,7 +52,7 @@ window.addEventListener('load', () => {
     }
 
     app.onStart = function () {
-        canvas.setBackground(new Color(0.1, 0.1, 0.11, 1));
+        canvas.setBackground(new Color(1, 1, 1, 1));
         canvas.setMargin(new Vector2(400, 0));
         canvas.fullscreen(true);
 

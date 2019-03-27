@@ -10,19 +10,19 @@ body {
 
 * {
 	font-family: 'Courier New', Courier, monospace;
-	color: white;
+	color: black;
 	font-size: 12px;
-	background-color: rgba(25.5, 25.5, 28.05, 255);
+	background-color: rgba(255, 255, 255, 255);
 	outline: none;
 }
 
 ::-webkit-scrollbar {
-	background-color: rgba(35, 35, 36, 255);
+	background-color: rgba(235, 235, 240, 255);
 	width: 15px;
 }
 
 ::-webkit-scrollbar-thumb {
-	background-color: rgba(55, 55, 57, 255);
+	background-color: rgba(205, 205, 210, 255);
 }
 
 a, a * {
