@@ -281,15 +281,15 @@ class Graph {
 							for (let j = 0; j < restrictions.length; j++) {
 								if (restrictions[j][0] == 'x') {
 									if (restrictions[j][1] == '<') {
-										maxX = parseFloat(restrictions[j].split('<')[1]);
+										maxX = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minX = parseFloat(restrictions[j].split('>')[1]);
+										minX = restrictions[j].split('>')[1];
 									}
 								} else if (restrictions[j][0] == 'y') {
 									if (restrictions[j][1] == '<') {
-										maxY = parseFloat(restrictions[j].split('<')[1]);
+										maxY = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minY = parseFloat(restrictions[j].split('>')[1]);
+										minY = restrictions[j].split('>')[1];
 									}
 								}
 							}
@@ -338,15 +338,15 @@ class Graph {
 							for (let j = 0; j < restrictions.length; j++) {
 								if (restrictions[j][0] == 'x') {
 									if (restrictions[j][1] == '<') {
-										maxX = parseFloat(restrictions[j].split('<')[1]);
+										maxX = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minX = parseFloat(restrictions[j].split('>')[1]);
+										minX = restrictions[j].split('>')[1];
 									}
 								} else if (restrictions[j][0] == 'y') {
 									if (restrictions[j][1] == '<') {
-										maxY = parseFloat(restrictions[j].split('<')[1]);
+										maxY = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minY = parseFloat(restrictions[j].split('>')[1]);
+										minY = restrictions[j].split('>')[1];
 									}
 								}
 							}
@@ -400,15 +400,15 @@ class Graph {
 							for (let j = 0; j < restrictions.length; j++) {
 								if (restrictions[j][0] == 'x') {
 									if (restrictions[j][1] == '<') {
-										maxX = parseFloat(restrictions[j].split('<')[1]);
+										maxX = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minX = parseFloat(restrictions[j].split('>')[1]);
+										minX = restrictions[j].split('>')[1];
 									}
 								} else if (restrictions[j][0] == 'y') {
 									if (restrictions[j][1] == '<') {
-										maxY = parseFloat(restrictions[j].split('<')[1]);
+										maxY = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minY = parseFloat(restrictions[j].split('>')[1]);
+										minY = restrictions[j].split('>')[1];
 									}
 								}
 							}
@@ -438,7 +438,7 @@ class Graph {
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
 						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
-
+						
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
 
