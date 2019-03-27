@@ -59,7 +59,7 @@ aside, #asideWrapper {
 }
 
 #asideWrapper textarea {
-	height: 33%;
+	height: 33.33%;
 	width: 100%;
 	overflow: scroll;
 	overflow-x: hidden;
@@ -69,10 +69,11 @@ aside, #asideWrapper {
 	padding: 10px;
 	resize: none;
 	cursor: auto;
+	display: block;
 }
 
 #variables, #userFunctions {
-	border-top: 1px solid rgba(50, 50, 50, 255);
+	border-top: 1px solid rgba(150, 150, 160, 255) !important;
 }
 
 /* Canvas */
