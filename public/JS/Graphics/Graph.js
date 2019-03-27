@@ -280,7 +280,7 @@ class Graph {
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
+						let added = '';
 						if (minX != undefined)
 							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
@@ -291,16 +291,20 @@ class Graph {
 						else
 							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
 
-						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+						if (minY != undefined)
+							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+						else
+							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+
+						if (maxY != undefined)
+							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+						else
+							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
 
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
-
-						if (minY != undefined)
-							startY = Math.max(startY, minY)
-
-						if (maxY != undefined)
-							endY = Math.min(endY, maxY)
 
 						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -333,7 +337,7 @@ class Graph {
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
+						let added = '';
 						if (minX != undefined)
 							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
@@ -344,16 +348,20 @@ class Graph {
 						else
 							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
 
-						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+						if (minY != undefined)
+							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+						else
+							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+
+						if (maxY != undefined)
+							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+						else
+							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
 
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
-
-						if (minY != undefined)
-							startY = Math.max(startY, minY)
-
-						if (maxY != undefined)
-							endY = Math.min(endY, maxY)
 
 						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -391,7 +399,17 @@ class Graph {
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
+						let added = '';
+						if (minX != undefined)
+							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+						else
+							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+
+						if (maxX != undefined)
+							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+						else
+							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+
 						if (minY != undefined)
 							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
@@ -402,16 +420,10 @@ class Graph {
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
 
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
-
-						if (minX != undefined)
-							startX = Math.max(startX, minX)
-
-						if (maxX != undefined)
-							endX = Math.min(endX, maxX)
 
 						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -428,15 +440,15 @@ class Graph {
 							for (let j = 0; j < restrictions.length; j++) {
 								if (restrictions[j][0] == 'x') {
 									if (restrictions[j][1] == '<') {
-										maxX = parseFloat(restrictions[j].split('<')[1]);
+										maxX = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minX = parseFloat(restrictions[j].split('>')[1]);
+										minX = restrictions[j].split('>')[1];
 									}
 								} else if (restrictions[j][0] == 'y') {
 									if (restrictions[j][1] == '<') {
-										maxY = parseFloat(restrictions[j].split('<')[1]);
+										maxY = restrictions[j].split('<')[1];
 									} else if (restrictions[j][1] == '>') {
-										minY = parseFloat(restrictions[j].split('>')[1]);
+										minY = restrictions[j].split('>')[1];
 									}
 								}
 							}
@@ -444,7 +456,17 @@ class Graph {
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
 
-						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
+						let added = '';
+						if (minX != undefined)
+							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+						else
+							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+
+						if (maxX != undefined)
+							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+						else
+							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+
 						if (minY != undefined)
 							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
@@ -455,16 +477,10 @@ class Graph {
 						else
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
 
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
-
-						if (minX != undefined)
-							startX = Math.max(startX, minX)
-
-						if (maxX != undefined)
-							endX = Math.min(endX, maxX)
 
 						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
@@ -480,7 +496,7 @@ class Graph {
 						canvas.flush('POINT', true, vertex, pointCalcFragmentShader, this.time, true);
 
 						vertex = pointShader.replace(/(POS)/gm, pos);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+						vertex = 'const mediump float t=' + this.time + ';' + this.variables + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time);
