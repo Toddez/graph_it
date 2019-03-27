@@ -438,7 +438,7 @@ class Graph {
 							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
 
 						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
-						
+
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
 
