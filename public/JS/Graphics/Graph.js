@@ -17,7 +17,7 @@ class Graph {
 	}
 
 	derivitiveY(func, prec) {
-		return '(((' + func.replace(/(x)/gm, '(x+' + prec + ')') + ')-(' + func + '))/' + prec + ')'
+		return '(((' + func.replace(/(x)/gm, '(x+' + prec + ')') + ')-(' + func.replace(/(x)/gm, '(x-' + prec + ')') + '))/' + (prec * 2) + ')'
 	}
 
 	referenceY(current, functions, prec) {
@@ -42,7 +42,7 @@ class Graph {
 				for (let k = 0; k < functions.length; k++) {
 					if (functions[k].type.substring(0, 2) == 'y=' && functionIndex != current) {
 						if (functionIndex == index) {
-							let func = '(' + this.referenceY(k, functions, Math.max(prec * 0.85, 0.01)) + ')';
+							let func = '(' + this.referenceY(k, functions, prec) + ')';
 							if (functions[k].type[2] == "'")
 								func = this.derivitiveY(func, prec);
 
@@ -59,7 +59,7 @@ class Graph {
 	}
 
 	derivitiveX(func, prec) {
-		return '(((' + func.replace(/(y)/gm, '(y+' + prec + ')') + ')-(' + func + '))/' + prec + ')'
+		return '(((' + func.replace(/(y)/gm, '(y+' + prec + ')') + ')-(' + func.replace(/(y)/gm, '(y-' + prec + ')') + '))/' + (prec * 2) + ')'
 	}
 
 	referenceX(current, functions, prec) {
@@ -84,7 +84,7 @@ class Graph {
 				for (let k = 0; k < functions.length; k++) {
 					if (functions[k].type.substring(0, 2) == 'x=' && functionIndex != current) {
 						if (functionIndex == index) {
-							let func = '(' + this.referenceX(k, functions, Math.max(prec * 0.85, 0.01)) + ')';
+							let func = '(' + this.referenceX(k, functions, prec) + ')';
 							if (functions[k].type[2] == "'")
 								func = this.derivitiveX(func, prec);
 
@@ -157,11 +157,19 @@ class Graph {
 				let string = functions[i].trim().replace(/ /gm, '');
 
 				let type = string[0];
-				if (type == 'x')
-					this.functions.push({ type: type + string[1] + string[2], x: string.split('=')[1] });
-				else if (type == 'y')
-					this.functions.push({ type: type + string[1] + string[2], y: string.split('=')[1] });
-				else if (type == '(' && string[string.length - 1] == ')') {
+				if (type == 'x') {
+					let restriction;
+					if (string.split('{')[1])
+						restriction = string.split('{')[1].split('}')[0];
+
+					this.functions.push({ type: type + string[1] + string[2], x: string.split('{')[0].split('=')[1], restriction: restriction });
+				} else if (type == 'y') {
+					let restriction;
+					if (string.split('{')[1])
+						restriction = string.split('{')[1].split('}')[0];
+
+					this.functions.push({ type: type + string[1] + string[2], y: string.split('{')[0].split('=')[1], restriction: restriction });
+				} else if (type == '(' && string[string.length - 1] == ')') {
 					this.functions.push({ type: type, pos: string });
 				}
 			}
@@ -231,7 +239,7 @@ class Graph {
 		let oneScaledX = 1 / canvas.scale.x;
 		let oneScaledY = 1 / canvas.scale.y;
 
-		let fragment = fragmentShader;
+		let fragment = lineFragmentShader;
 
 		canvas.flush('CLEAR');
 		text.flush2d();
@@ -242,40 +250,170 @@ class Graph {
 			for (let i = 0; i < functions.length; i++) {
 				if (functions[i].type == "x='") {
 					try {
-						let x = this.derivitiveX(this.referenceX(i, functions, 0.1), 0.1);
-						x = this.sanitize(x);
-						
-						let y = '-aPos.y';
-	
-						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+						let prec = Math.abs((-centerY + oneScaledY) - (-centerY - oneScaledY)) / (0.5 * (canvas.dimensions.y - canvas.margin.y));
 
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
+						let x = this.derivitiveX(this.referenceX(i, functions, prec), prec);
+						x = this.sanitize(x);
+
+						let y = 'aPos.y';
+
+						let minX, maxX, minY, maxY;
+						if (functions[i].restriction) {
+							let restrictions = functions[i].restriction.split(';');
+
+							for (let j = 0; j < restrictions.length; j++) {
+								if (restrictions[j][0] == 'x') {
+									if (restrictions[j][1] == '<') {
+										maxX = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minX = parseFloat(restrictions[j].split('>')[1]);
+									}
+								} else if (restrictions[j][0] == 'y') {
+									if (restrictions[j][1] == '<') {
+										maxY = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minY = parseFloat(restrictions[j].split('>')[1]);
+									}
+								}
+							}
+						}
+
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+
+						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
+						if (minX)
+							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+						else
+							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+
+						if (maxX)
+							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+						else
+							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+
+						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+
+						let startY = -centerY - oneScaledY;
+						let endY = -centerY + oneScaledY;
+
+						if (minY)
+							startY = Math.max(startY, minY)
+
+						if (maxY)
+							endY = Math.min(endY, maxY)
+
+						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type.substring(0, 2) == 'x=') {
 					try {
 						let x = this.sanitize(functions[i].x);
-						let y = '-aPos.y';
+						let y = 'aPos.y';
+
+						let minX, maxX, minY, maxY;
+						if (functions[i].restriction) {
+							let restrictions = functions[i].restriction.split(';');
+
+							for (let j = 0; j < restrictions.length; j++) {
+								if (restrictions[j][0] == 'x') {
+									if (restrictions[j][1] == '<') {
+										maxX = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minX = parseFloat(restrictions[j].split('>')[1]);
+									}
+								} else if (restrictions[j][0] == 'y') {
+									if (restrictions[j][1] == '<') {
+										maxY = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minY = parseFloat(restrictions[j].split('>')[1]);
+									}
+								}
+							}
+						}
 
 						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
 
-						canvas.renderLineY(-centerY - oneScaledY, -centerY + oneScaledY, 3 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
+						let added = 'const mediump float miny=0.0; const mediump float maxy=0.0; const bool useMiny=false; const bool useMaxy=false;';
+						if (minX)
+							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+						else
+							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+
+						if (maxX)
+							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+						else
+							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+
+						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+
+						let startY = -centerY - oneScaledY;
+						let endY = -centerY + oneScaledY;
+
+						if (minY)
+							startY = Math.max(startY, minY)
+
+						if (maxY)
+							endY = Math.min(endY, maxY)
+
+						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == "y='") {
-					let x = 'aPos.x';
-
-					let y = this.derivitiveY(this.referenceY(i, functions, 0.1), 0.1);
-
-					y = this.sanitize(y);
-
 					try {
-						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+						let x = 'aPos.x';
 
-						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
+						let prec = Math.abs((-centerX + oneScaledX) - (-centerX - oneScaledX)) / (0.5 * (canvas.dimensions.x - canvas.margin.y));
+
+						let y = this.derivitiveY(this.referenceY(i, functions, prec), prec);
+
+						y = this.sanitize(y);
+
+						let minX, maxX, minY, maxY;
+						if (functions[i].restriction) {
+							let restrictions = functions[i].restriction.split(';');
+
+							for (let j = 0; j < restrictions.length; j++) {
+								if (restrictions[j][0] == 'x') {
+									if (restrictions[j][1] == '<') {
+										maxX = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minX = parseFloat(restrictions[j].split('>')[1]);
+									}
+								} else if (restrictions[j][0] == 'y') {
+									if (restrictions[j][1] == '<') {
+										maxY = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minY = parseFloat(restrictions[j].split('>')[1]);
+									}
+								}
+							}
+						}
+
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+
+						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
+						if (minY)
+							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+						else
+							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+
+						if (maxY)
+							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+						else
+							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+
+						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+
+						let startX = -centerX - oneScaledX;
+						let endX = -centerX + oneScaledX;
+
+						if (minX)
+							startX = Math.max(startX, minX)
+
+						if (maxX)
+							endX = Math.min(endX, maxX)
+
+						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type.substring(0, 2) == 'y=') {
@@ -283,10 +421,52 @@ class Graph {
 						let x = 'aPos.x';
 						let y = this.sanitize(functions[i].y);
 
-						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-						vertex = 'const float t=' + this.time + ';' + this.variables + vertex;
+						let minX, maxX, minY, maxY;
+						if (functions[i].restriction) {
+							let restrictions = functions[i].restriction.split(';');
 
-						canvas.renderLineX(-centerX - oneScaledX, -centerX + oneScaledX, 3 * (canvas.dimensions.x - canvas.margin.y), functions[i].color);
+							for (let j = 0; j < restrictions.length; j++) {
+								if (restrictions[j][0] == 'x') {
+									if (restrictions[j][1] == '<') {
+										maxX = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minX = parseFloat(restrictions[j].split('>')[1]);
+									}
+								} else if (restrictions[j][0] == 'y') {
+									if (restrictions[j][1] == '<') {
+										maxY = parseFloat(restrictions[j].split('<')[1]);
+									} else if (restrictions[j][1] == '>') {
+										minY = parseFloat(restrictions[j].split('>')[1]);
+									}
+								}
+							}
+						}
+
+						let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
+
+						let added = 'const mediump float minx=0.0; const mediump float maxx=0.0; const bool useMinx=false; const bool useMaxx=false;';
+						if (minY)
+							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+						else
+							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+
+						if (maxY)
+							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+						else
+							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+
+						vertex = added + 'const mediump float t=' + this.time + ';' + this.variables + vertex;
+
+						let startX = -centerX - oneScaledX;
+						let endX = -centerX + oneScaledX;
+
+						if (minX)
+							startX = Math.max(startX, minX)
+
+						if (maxX)
+							endX = Math.min(endX, maxX)
+
+						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type == '(') {
@@ -317,16 +497,11 @@ class Graph {
 		text.position = canvas.position;
 		text.scale = canvas.scale;
 
-		let x = 'aPos.x';
-		let y = 'aPos.y';
-
-		let vertex = lineShader.replace(/(X)/gm, x).replace(/(Y)/gm, y);
-
 		canvas.renderXAxis(centerX, centerY, oneScaledX, new Color(0.6, 0.6, 0.6, 1));
-		canvas.flush('LINE', true, vertex, fragment, this.time);
+		canvas.flush('LINE', true, backgroundLineShader, fragmentShader, this.time);
 
 		canvas.renderYAxis(centerY, centerX, oneScaledY, new Color(0.6, 0.6, 0.6, 1));
-		canvas.flush('LINE', true, vertex, fragment, this.time);
+		canvas.flush('LINE', true, backgroundLineShader, fragmentShader, this.time);
 
 		let min = Math.max((1 / canvas.scale.x) * 2, (1 / canvas.scale.x) * 2);
 
@@ -368,10 +543,10 @@ class Graph {
 			}
 
 		canvas.renderGridX(-centerX, -centerY, scale, oneScaledY, Math.ceil(oneScaledX / scale));
-		canvas.flush('LINE', true, vertex, fragment, this.time);
+		canvas.flush('LINE', true, backgroundLineShader, fragmentShader, this.time);
 
 		canvas.renderGridY(-centerY, -centerX, scale, oneScaledX, Math.ceil(oneScaledY / scale));
-		canvas.flush('LINE', true, vertex, fragment, this.time);
+		canvas.flush('LINE', true, backgroundLineShader, fragmentShader, this.time);
 
 		text.renderTextX(-centerX, -centerY, scale, Math.ceil(oneScaledX / scale));
 		text.renderTextY(centerY, -centerX, scale, Math.ceil(oneScaledY / scale));
@@ -398,10 +573,39 @@ const lineShader = `
 		float y = aPos.y;
 		x = float(X);
 		y = float(Y);
-		vec2 position = (uMatrix * vec3(x, y, 1.0)).xy;
-
-		float z = 0.0;
+		
 		vec4 color = aColor;
+		float z = 0.0;
+
+		if (useMinx == true) {
+			if (x < minx) {
+				color.a = 0.0;
+				z = 1.0;
+			}
+		}
+
+		if (useMaxx == true) {
+			if (x > maxx) {
+				color.a = 0.0;
+				z = 1.0;
+			}
+		}
+
+		if (useMiny == true) {
+			if (y < miny) {
+				color.a = 0.0;
+				z = 1.0;
+			}
+		}
+
+		if (useMaxy == true) {
+			if (y > maxy) {
+				color.a = 0.0;
+				z = 1.0;
+			}
+		}
+		
+		vec2 position = (uMatrix * vec3(x, y, 1.0)).xy;
 		if (abs(position.x) > 1.01 || abs(position.y) > 1.01) {
 			z = 1.0;
 			color.a = 0.0;
@@ -410,6 +614,43 @@ const lineShader = `
 		vColor = color;
 		vRes = uRes;
 
+		gl_Position = vec4(position.xy, z, 1.0);
+	}
+`;
+
+const lineFragmentShader = `
+	varying mediump vec4 vColor;
+
+	void main(void) {
+		mediump vec4 color = vColor;
+
+		gl_FragColor = vColor;
+	}
+`;
+
+const backgroundLineShader = `
+	attribute vec2 aPos;
+	attribute vec4 aColor;
+
+	uniform mat3 uMatrix;
+	uniform vec2 uRes;
+	
+	varying mediump vec4 vColor;
+	varying mediump vec2 vRes;
+	
+	void main(void) {
+		vec2 position = (uMatrix * vec3(aPos.x, aPos.y, 1.0)).xy;
+	
+		float z = 0.0;
+		vec4 color = aColor;
+		if (abs(position.x) > 1.01 || abs(position.y) > 1.01) {
+			z = 1.0;
+			color.a = 0.0;
+		} 
+	
+		vColor = color;
+		vRes = uRes;
+	
 		gl_Position = vec4(position.xy, z, 1.0);
 	}
 `;
