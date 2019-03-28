@@ -368,11 +368,13 @@ class Canvas {
 
 			let text = { text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'right', base: 'middle', stroke: '#999', strokeWeight: 1 };
 
-			if (Math.abs(Math.max(this.scale.x, this.scale.y)) > 100 || Math.abs(Math.min(this.scale.x, this.scale.y)) < 0.0001)
+			if (text.text == 0) {
+				text.align = 'right';
+				text.base = 'top';
+			} else if (Math.abs(Math.max(this.scale.x, this.scale.y)) > 100 || Math.abs(Math.min(this.scale.x, this.scale.y)) < 0.0001)
 				text.text = text.text.toExponential();
 
-			if (text.text != 0)
-				this.text.push(text);
+			this.text.push(text);
 		}
 	}
 
