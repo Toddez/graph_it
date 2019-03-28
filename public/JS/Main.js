@@ -99,6 +99,29 @@ window.addEventListener('load', () => {
     }
 
     app.onUpdate = function (deltaTime) {
+
+        if (showingInput) {
+            let wrapper = document.getElementById('asideWrapper');
+            let inputwrapper = document.getElementById('inputWrapper');
+            let info = document.getElementById('info');
+            let nav = document.getElementsByTagName('nav')[0];
+
+            let width = inputwrapper.offsetWidth;
+            wrapper.style = 'width: ' + width + 'px';
+            info.style = 'width: ' + width + 'px';
+            nav.style = 'left: ' + width + 'px';
+
+            canvas.margin.x = width;
+            canvas.element.style = 'left: ' + width + 'px';
+
+            text.margin.x = width;
+            text.element.style = 'left: ' + width + 'px';
+
+            canvas.fullscreen(true);
+            text.fullscreen(true);
+        }
+
+
         if (inputChanged == true && app.getTime() - lastInput >= 0.15) {
             checkInput();
             inputChanged = false;
