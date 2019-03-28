@@ -99,8 +99,7 @@ window.addEventListener('load', () => {
     }
 
     app.onUpdate = function (deltaTime) {
-
-        if (showingInput) {
+        if (showingInput == true) {
             let wrapper = document.getElementById('asideWrapper');
             let inputwrapper = document.getElementById('inputWrapper');
             let info = document.getElementById('info');
@@ -119,8 +118,23 @@ window.addEventListener('load', () => {
 
             canvas.fullscreen(true);
             text.fullscreen(true);
-        }
+        } else {
+            let wrapper = document.getElementById('asideWrapper');
+            let info = document.getElementById('info');
+            let nav = document.getElementsByTagName('nav')[0];
 
+            nav.style = 'left: 100%';
+            wrapper.style = 'width: 0px';
+
+            canvas.margin.x = 0;
+            canvas.element.style = 'left: 0px';
+
+            text.margin.x = 0;
+            text.element.style = 'left: 0px';
+
+            canvas.fullscreen(true);
+            text.fullscreen(true);
+        }
 
         if (inputChanged == true && app.getTime() - lastInput >= 0.15) {
             checkInput();

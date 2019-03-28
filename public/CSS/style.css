@@ -52,7 +52,6 @@ aside, #asideWrapper {
 	border: none;
 	margin: none;
 	padding: none;
-	transition: 0.1s;
 }
 
 #asideWrapper.hidden {
@@ -92,7 +91,6 @@ canvas {
 	position: absolute;
 	background-color: transparent !important;
 	cursor: grab;
-	transition: 0.1s;
 }
 
 canvas.grabbing {
@@ -145,7 +143,6 @@ nav .option {
 	border: none;
 	margin: none;
 	padding: 10px;
-	transition: 0.1s;
 	opacity: 0;
 }
 
