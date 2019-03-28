@@ -267,7 +267,10 @@ class Graph {
 			for (let i = 0; i < functions.length; i++) {
 				if (functions[i].type == "x='") {
 					try {
-						let prec = Math.abs((-centerY + oneScaledY) - (-centerY - oneScaledY)) / (0.5 * (canvas.dimensions.y - canvas.margin.y));
+						let startY = -centerY - oneScaledY;
+						let endY = -centerY + oneScaledY;
+						let length = 0.5 * (canvas.dimensions.y - canvas.margin.y);
+						let prec = Math.abs(endY - startY) / length;
 
 						let x = this.derivitiveX(this.referenceX(i, functions, prec), prec);
 						x = this.sanitize(x);
@@ -299,31 +302,28 @@ class Graph {
 
 						let added = '';
 						if (minX != undefined)
-							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+							added = added + 'const float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
-							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+							added = added + 'const float minx=0.0; const bool useMinx=false;';
 
 						if (maxX != undefined)
-							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+							added = added + 'const float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
-							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+							added = added + 'const float maxx=0.0; const bool useMaxx=false;';
 
 						if (minY != undefined)
-							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+							added = added + 'const float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
-							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+							added = added + 'const float miny=0.0; const bool useMiny=false;';
 
 						if (maxY != undefined)
-							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+							added = added + 'const float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
-							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+							added = added + 'const float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
-						let startY = -centerY - oneScaledY;
-						let endY = -centerY + oneScaledY;
-
-						canvas.renderLineY(startY, endY, 0.5 * (canvas.dimensions.y - canvas.margin.y), functions[i].color);
+						canvas.renderLineY(startY, endY, length, functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type.substring(0, 2) == 'x=') {
@@ -356,26 +356,26 @@ class Graph {
 
 						let added = '';
 						if (minX != undefined)
-							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+							added = added + 'const float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
-							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+							added = added + 'const float minx=0.0; const bool useMinx=false;';
 
 						if (maxX != undefined)
-							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+							added = added + 'const float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
-							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+							added = added + 'const float maxx=0.0; const bool useMaxx=false;';
 
 						if (minY != undefined)
-							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+							added = added + 'const float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
-							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+							added = added + 'const float miny=0.0; const bool useMiny=false;';
 
 						if (maxY != undefined)
-							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+							added = added + 'const float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
-							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+							added = added + 'const float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + added + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + added + vertex;
 
 						let startY = -centerY - oneScaledY;
 						let endY = -centerY + oneScaledY;
@@ -387,7 +387,10 @@ class Graph {
 					try {
 						let x = 'aPos.x';
 
-						let prec = Math.abs((-centerX + oneScaledX) - (-centerX - oneScaledX)) / (0.5 * (canvas.dimensions.x - canvas.margin.y));
+						let startX = -centerX - oneScaledX;
+						let endX = -centerX + oneScaledX;
+						let length = 0.5 * (canvas.dimensions.x - canvas.margin.x);
+						let prec = Math.abs(endX - startX) / length;
 
 						let y = this.derivitiveY(this.referenceY(i, functions, prec), prec);
 
@@ -418,31 +421,28 @@ class Graph {
 
 						let added = '';
 						if (minX != undefined)
-							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+							added = added + 'const float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
-							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+							added = added + 'const float minx=0.0; const bool useMinx=false;';
 
 						if (maxX != undefined)
-							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+							added = added + 'const float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
-							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+							added = added + 'const float maxx=0.0; const bool useMaxx=false;';
 
 						if (minY != undefined)
-							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+							added = added + 'const float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
-							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+							added = added + 'const float miny=0.0; const bool useMiny=false;';
 
 						if (maxY != undefined)
-							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+							added = added + 'const float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
-							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+							added = added + 'const float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
-						let startX = -centerX - oneScaledX;
-						let endX = -centerX + oneScaledX;
-
-						canvas.renderLineX(startX, endX, 0.5 * (canvas.dimensions.x - canvas.margin.x), functions[i].color);
+						canvas.renderLineX(startX, endX, length, functions[i].color);
 						canvas.flush('LINE', true, vertex, fragment, this.time);
 					} catch { }
 				} else if (functions[i].type.substring(0, 2) == 'y=') {
@@ -475,26 +475,26 @@ class Graph {
 
 						let added = '';
 						if (minX != undefined)
-							added = added + 'const mediump float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
+							added = added + 'const float minx=' + this.sanitize(minX) + '; const bool useMinx=true;';
 						else
-							added = added + 'const mediump float minx=0.0; const bool useMinx=false;';
+							added = added + 'const float minx=0.0; const bool useMinx=false;';
 
 						if (maxX != undefined)
-							added = added + 'const mediump float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
+							added = added + 'const float maxx=' + this.sanitize(maxX) + '; const bool useMaxx=true;';
 						else
-							added = added + 'const mediump float maxx=0.0; const bool useMaxx=false;';
+							added = added + 'const float maxx=0.0; const bool useMaxx=false;';
 
 						if (minY != undefined)
-							added = added + 'const mediump float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
+							added = added + 'const float miny=' + this.sanitize(minY) + '; const bool useMiny=true;';
 						else
-							added = added + 'const mediump float miny=0.0; const bool useMiny=false;';
+							added = added + 'const float miny=0.0; const bool useMiny=false;';
 
 						if (maxY != undefined)
-							added = added + 'const mediump float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
+							added = added + 'const float maxy=' + this.sanitize(maxY) + '; const bool useMaxy=true;';
 						else
-							added = added + 'const mediump float maxy=0.0; const bool useMaxy=false;';
+							added = added + 'const float maxy=0.0; const bool useMaxy=false;';
 
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + this.userFunctions + added + vertex;
 
 						let startX = -centerX - oneScaledX;
 						let endX = -centerX + oneScaledX;
@@ -513,7 +513,7 @@ class Graph {
 						canvas.flush('POINT', true, vertex, pointCalcFragmentShader, this.time, true);
 
 						vertex = pointShader.replace(/(POS)/gm, pos);
-						vertex = 'const mediump float t=' + this.time + ';' + this.variables + this.userFunctions + vertex;
+						vertex = 'const float t=' + this.time + ';' + this.variables + this.userFunctions + vertex;
 
 						canvas.renderPoint(functions[i].color);
 						canvas.flush('POINT', true, vertex, pointFragmentShader, this.time);
@@ -592,6 +592,8 @@ class Graph {
 
 // Lines
 const lineShader = `
+	precision highp float;
+
 	attribute vec2 aPos;
 	attribute vec4 aColor;
 

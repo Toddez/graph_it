@@ -342,11 +342,12 @@ class Canvas {
 			let textY = ((-this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
 			let text = { text: Math.round(x * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'center', base: 'top', stroke: '#999', strokeWeight: 1 };
-			if (x == 0)
+			if (text.text == 0)
 				text.align = 'right';
+			else if (Math.abs(Math.max(this.scale.x, this.scale.y)) > 100 || Math.abs(Math.min(this.scale.x, this.scale.y)) < 0.0001)
+				text.text = text.text.toExponential();
 
 			this.text.push(text);
-
 		}
 	}
 
@@ -365,8 +366,13 @@ class Canvas {
 			let textX = ((this.position.x) / (1 / this.scale.x)) * (this.dimensions.x - this.margin.x) / 2;
 			let textY = ((y - this.position.y) / (1 / this.scale.y)) * (this.dimensions.y - this.margin.y) / 2;
 
-			if (y != 0)
-				this.text.push({ text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'right', base: 'middle', stroke: '#999', strokeWeight: 1 });
+			let text = { text: Math.round(-y * 1000000) / 1000000, pos: new Vector2(textX, textY), color: '#000', align: 'right', base: 'middle', stroke: '#999', strokeWeight: 1 };
+
+			if (Math.abs(Math.max(this.scale.x, this.scale.y)) > 100 || Math.abs(Math.min(this.scale.x, this.scale.y)) < 0.0001)
+				text.text = text.text.toExponential();
+
+			if (text.text != 0)
+				this.text.push(text);
 		}
 	}
 
@@ -499,7 +505,7 @@ class Canvas {
 			let h = 6;
 			let w = 6 * (text.text + '').length;
 
-			if (x >= this.dimensions.x - this.margin.x - w ) {
+			if (x >= this.dimensions.x - this.margin.x - w) {
 				x = this.dimensions.x - this.margin.x;
 				text.align = 'right';
 			} else if (x < w) {
@@ -507,7 +513,7 @@ class Canvas {
 				text.align = 'left'
 			}
 
-			if (y >= this.dimensions.y - this.margin.y - h ) {
+			if (y >= this.dimensions.y - this.margin.y - h) {
 				y = this.dimensions.y - this.margin.y;
 				text.base = 'bottom';
 			} else if (y < h) {

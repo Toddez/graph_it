@@ -136,8 +136,8 @@ window.addEventListener('load', () => {
             canvas.scale.y -= Math.min(yDiff * 8, canvas.scale.y * 0.9);
 
             let ratio = (canvas.dimensions.x - canvas.margin.x) / (canvas.dimensions.y - canvas.margin.y);
-            canvas.scale.x = Math.min(Math.max(0.000001 / ratio, canvas.scale.x), 1000000 / ratio);
-            canvas.scale.y = Math.min(Math.max(0.000001, canvas.scale.y), 1000000);
+            canvas.scale.x = Math.min(Math.max(0.00001 / ratio, canvas.scale.x), 100000 / ratio);
+            canvas.scale.y = Math.min(Math.max(0.00001, canvas.scale.y), 100000);
 
             mouseRealX = map(Canvas.mousePos.x * 2, 0, canvas.dimensions.x - canvas.margin.x, -1, 1) * (1 / canvas.scale.x);
             mouseRealY = map(Canvas.mousePos.y * 2, 0, canvas.dimensions.y - canvas.margin.y, -1, 1) * (1 / canvas.scale.y);
