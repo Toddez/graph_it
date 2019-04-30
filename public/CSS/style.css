@@ -77,6 +77,13 @@ aside, #asideWrapper {
 	cursor: auto;
 	display: block;
 	resize: none;
+	background-color: #333;
+	color: #fff;
+}
+
+#inputWrapper textarea::placeholder {
+	background-color: #333;
+	color: #bbb;
 }
 
 #variables, #userFunctions {
@@ -144,6 +151,8 @@ nav .option {
 	margin: none;
 	padding: 10px;
 	opacity: 0;
+	background-color: #333;
+	color: #fff;
 }
 
 #info.showing {
@@ -154,4 +163,11 @@ nav .option {
 #info ul {
 	padding-left: 20px;
 	margin: 10px;
+	background-color: #333;
+	color: #fff;
+}
+
+#info ul li {
+	background-color: #333;
+	color: #fff;
 }
