@@ -1,0 +1,12 @@
+{
+  "name": "graph_it",
+  "version": "1.0.0",
+  "main": "server.js",
+  "repository": "git@github.com:Toddez/graph_it.git",
+  "author": "Teo Carlsson <carlsson.teo@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "ejs": "^3.1.6",
+    "express": "^4.17.1"
+  }
+}
