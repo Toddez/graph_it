@@ -32,5 +32,5 @@ Runs a express server on port 3000 serving the application
   - Constants and functions are evaluated in order
 - ### Displaying results:
   - All expressions are evaluated and rendered on the GPU using WebGL in real time
-  - Move around golding left click and dragging mouse
+  - Move around holding left click and dragging mouse
   - Zoom using scroll wheel
